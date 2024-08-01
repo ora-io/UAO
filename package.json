@@ -1,0 +1,11 @@
+{
+  "name": "uao",
+  "version": "1.0.0",
+  "description": "The universal async-style oracle contract framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Norman <@nom4dv3>",
+  "license": "ISC"
+}

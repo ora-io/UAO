@@ -1,3 +1,30 @@
+# AsyncOracle: the Async-style Oracle Contract Framework
+
+## TODO
+- Complete nodeManagers
+- Upgradable support
+- Ownership transfer support
+- Test case coverage
+
+## Framework Structure
+- `AsyncOracle.sol`: the main/basic AsyncOracle contract
+- `fee/`
+  - `feebase/`
+    - includes basic fee types, that can be flexibly combined to use
+    - currently has 4 basic fee types: protocol fee, model fee, node fee, callback fee
+    - should have minimum externals
+  - `feemodel/`
+    - includes variant fee models that combines the basic fee types in different ways
+    - currently has 1 fee model: PNMC_Ownerable, i.e. Protocol+Model+Node+Callback+Ownerable
+    - can have externals
+- `manage/`
+  - `BWListManage.sol`: Blacklist and Whitelist
+  - `ModelManageBase.sol`: provide basic manage, doesn't care about access control (maybe can add `modelManagers` role similar to `nodeManagers`); also is used by ModelFee (maybe can separate in the future).
+  - `NodeManageBase.sol`: only `nodeManagers` can manage node list
+    - recommend usage: only owner can manage `nodeManagers` list, then nodeManagers manage node list
+- `utils/`
+  - `TokenAdapter.sol`: transfer in/out & balanceOf for any token;
+
 ## Foundry
 
 **Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
