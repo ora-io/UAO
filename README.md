@@ -1,10 +1,13 @@
-# AsyncOracle: the Async-style Oracle Contract Framework
+# Universal AsyncOracle: the Async-style Oracle Contract Framework
 
 ## TODO
 - Complete nodeManagers
 - Upgradable support
 - Ownership transfer support
 - Test case coverage
+
+## Sample
+- check `src/mock`
 
 ## Framework Structure
 - `AsyncOracle.sol`: the main/basic AsyncOracle contract
