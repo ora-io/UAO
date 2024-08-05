@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {AIOracle} from "../src/mock/oao/AIOracle.sol";
-import {DA} from "../src/interface/IAsyncOracle.sol";
-import {ETH_IDENTIFIER} from "../src/utils/TokenAdapter.sol";
+import {AIOracle} from "../contracts/mock/oao/AIOracle.sol";
+import {DA} from "../contracts/interface/IAsyncOracle.sol";
+import {ETH_IDENTIFIER} from "../contracts/utils/TokenAdapter.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract FeeModelTest is Test {

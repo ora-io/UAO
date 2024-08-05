@@ -1,6 +1,6 @@
 {
   "name": "uao",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "The universal async-style oracle contract framework",
   "main": "index.js",
   "scripts": {
