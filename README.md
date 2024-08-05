@@ -6,6 +6,44 @@
 - Ownership transfer support
 - Test case coverage
 
+## Usage
+
+Init a forge project if haven't
+
+```bash
+$ mkdir new-project && cd new-project
+$ forge init --force
+```
+
+Install and use
+
+```bash
+$ forge install ora-io/uao
+$ forge remappings > remappings.txt
+```
+
+In solidity:
+
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.13;
+
+import "@ora-io/uao/AsyncOracle.sol";
+
+// await(uint256 requestId, bytes calldata output, bytes calldata callbackData)
+bytes4 constant callbackFunctionSelector = 0x3f92108c;
+
+contract BabyAsyncOracle is AsyncOracle {
+    constructor() AsyncOracle(callbackFunctionSelector) {}
+}
+```
+
+Then compile the contract, should succeed without errors.
+
+```bash
+$ forge build
+```
+
 ## Sample
 - check `src/mock`
 
