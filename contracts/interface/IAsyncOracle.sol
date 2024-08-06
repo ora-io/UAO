@@ -33,8 +33,6 @@ interface IAsyncOracle {
     // function await(uint256 AID) external;
     function invoke(uint256 requestId, bytes memory result) external;
     function update(uint256 requestId, bytes memory result) external;
-    // in FeeUtils
-    // function estimateFee(uint256 modelId, uint256 gasLimit) external view returns (uint256);
 
     event AsyncRequest(
         address indexed requester,

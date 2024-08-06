@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "../../AsyncOracle.sol";
-import "../../fee/feemodel/FeeModel_PNMC_Ownerable.sol";
+import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
 import "../../manage/NodeManageBase.sol";
 import "../../manage/BWListManage.sol";
@@ -89,22 +89,6 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracle,
 
     function getOutput(uint256 requestId) external view returns (bytes memory output) {
         return opml.getOutput(requestId);
-    }
-
-    function estimateFee(
-        uint256 modelId,
-        bytes calldata input,
-        address callbackAddr,
-        uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
-    ) external view returns (uint256) {
-        Request memory requestMemory = _newRequestMemory(
-            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
-        );
-        return _estimateFeeMemory(requestMemory);
-        // return super.estimateFee(modelId, gasLimit);
     }
 
     // ********** Model Operations **********

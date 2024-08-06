@@ -16,7 +16,6 @@ contract FeeModelTest is Test {
     }
 
     function test_estimateFee() public view {
-        //TODO: estimateFee should check modelId existance.
         uint256 modelId = 0;
         bytes memory input = new bytes(1);
         input[0] = 0xab;

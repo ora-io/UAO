@@ -3,13 +3,21 @@ pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../AsyncOracle.sol";
-import "../feebase/ModelFee.sol";
-import "../feebase/NodeFee.sol";
-import "../feebase/ProtocolFee.sol";
-import "../feebase/CallbackFee.sol";
-import "../../interface/IAsyncOracle.sol";
+import "../base/ModelFee.sol";
+import "../base/NodeFee.sol";
+import "../base/ProtocolFee.sol";
+import "../base/CallbackFee.sol";
+import "../../interface/IFeeModel.sol";
 
-abstract contract FeeModel_PNMC_Ownerable is ProtocolFee, NodeFee, ModelFee, CallbackFee, Ownable {
+abstract contract FeeModel_PNMC_Ownerable is
+    IFeeModel,
+    ProtocolFee,
+    NodeFee,
+    ModelFee,
+    CallbackFee,
+    Ownable,
+    AsyncOracle
+{
     constructor(address _feeToken, uint256 _protocolFee, uint256 _nodeFee)
         ModelFee(_feeToken, owner())
         NodeFee(_feeToken, _nodeFee)
@@ -59,10 +67,27 @@ abstract contract FeeModel_PNMC_Ownerable is ProtocolFee, NodeFee, ModelFee, Cal
     }
 
     // ********** Externals - Permissionless **********
+
+    function estimateFee(
+        uint256 modelId,
+        bytes calldata input,
+        address callbackAddr,
+        uint64 gasLimit,
+        bytes calldata callbackData,
+        DA inputDA,
+        DA outputDA
+    ) external view virtual returns (uint256) {
+        Request memory requestMemory = _newRequestMemory(
+            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
+        );
+        return _estimateFeeMemory(requestMemory);
+        // return super.estimateFee(modelId, gasLimit);
+    }
+
     /**
      * include model commission revenue (i.e. the 1-receiverPercentage part) in protocol revenue
      */
-    function getProtocolRevenue() public view override returns (uint256) {
+    function getProtocolRevenue() public view virtual override returns (uint256) {
         uint256 balance = _tokenBalanceOf(_protocolFeeToken, address(this));
         // other revenue: _protocolRevenue + _commissionRevenue + not recorded transfer
         uint256 nonprotocol =
@@ -74,7 +99,7 @@ abstract contract FeeModel_PNMC_Ownerable is ProtocolFee, NodeFee, ModelFee, Cal
 
     // ********** Externals - Admin **********
 
-    function claimProtocolRevenue() public override onlyOwner {
+    function claimProtocolRevenue() public virtual override onlyOwner {
         // CEI
         uint256 amountOut = getProtocolRevenue();
         _resetProtocolRevenue();
@@ -83,7 +108,7 @@ abstract contract FeeModel_PNMC_Ownerable is ProtocolFee, NodeFee, ModelFee, Cal
         _tokenTransferOut(_protocolFeeToken, _getProtocolRevenueReceiver(), amountOut);
     }
 
-    function setFee(address _feeToken, uint256 _protocolFeeAmount, uint256 _nodeFeeAmount) external onlyOwner {
+    function setFee(address _feeToken, uint256 _protocolFeeAmount, uint256 _nodeFeeAmount) external virtual onlyOwner {
         _setProtocolFee(_feeToken, _protocolFeeAmount);
         _setNodeFee(_feeToken, _nodeFeeAmount);
         _setModelToken(_feeToken);

@@ -44,19 +44,21 @@ Then compile the contract, should succeed without errors.
 $ forge build
 ```
 
-## Sample
+## Examples
 - check `src/mock`
 
 ## Framework Structure
 - `AsyncOracle.sol`: the main/basic AsyncOracle contract
 - `fee/`
-  - `feebase/`
+  - `base/`
     - includes basic fee types, that can be flexibly combined to use
     - currently has 4 basic fee types: protocol fee, model fee, node fee, callback fee
     - should have minimum externals
-  - `feemodel/`
+  - `model/`
     - includes variant fee models that combines the basic fee types in different ways
-    - currently has 1 fee model: PNMC_Ownerable, i.e. Protocol+Model+Node+Callback+Ownerable
+    - currently has 2 fee models: 
+      - Free, i.e. no fee
+      - PNMC_Ownerable, i.e. Protocol+Model+Node+Callback+Ownerable
     - can have externals
 - `manage/`
   - `BWListManage.sol`: Blacklist and Whitelist
