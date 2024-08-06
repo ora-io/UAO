@@ -8,7 +8,7 @@ import "../../manage/NodeManageBase.sol";
 import "../../manage/BWListManage.sol";
 import "./interface/IOpml.sol";
 
-// TODO: add func def
+// aiOracleCallback(uint256 requestId, bytes calldata output, bytes calldata callbackData)
 bytes4 constant callbackFunctionSelector = 0xb0347814;
 
 struct ModelData {
