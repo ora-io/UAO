@@ -86,7 +86,7 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleF
 
     // call this function if the opml result is challenged and updated!
     // anyone can call it!
-    function update(uint256 requestId) external onlyWhitelist(msg.sender) {
+    function update(uint256 requestId) external {
         // get Latest output of request
         bytes memory output = opml.getOutput(requestId);
         require(output.length > 0, "output not uploaded");
