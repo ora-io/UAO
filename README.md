@@ -30,13 +30,14 @@ In solidity:
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "@ora-io/uao/AsyncOracle.sol";
+import "@ora-io/uao/AsyncOracleValidity.sol";
+import "@ora-io/uao/fee/model/FeeModel_Free.sol";
 
 // await(uint256 requestId, bytes calldata output, bytes calldata callbackData)
 bytes4 constant callbackFunctionSelector = 0x3f92108c;
 
-contract BabyAsyncOracle is AsyncOracle {
-    constructor() AsyncOracle(callbackFunctionSelector) {}
+contract BabyAsyncOracle is AsyncOracleValidity, FeeModel_Free {
+    constructor() AsyncOracleValidity(callbackFunctionSelector) {}
 }
 ```
 
@@ -51,7 +52,9 @@ $ forge build
 - [UAO-based OAO](https://github.com/ora-io/OAO-UAO)
 
 ## Framework Structure
-- `AsyncOracle.sol`: the main/basic AsyncOracle contract
+- `AsyncOracle.sol`: the main AsyncOracle contract
+- `AsyncOracleFraud.sol`: the main AsyncOracle contract with Fraud Proof style `invoke` and `update`
+- `AsyncOracleValidity.sol`: the main AsyncOracle contract with Validity Proof style `invoke`
 - `fee/`
   - `base/`
     - includes basic fee types, that can be flexibly combined to use

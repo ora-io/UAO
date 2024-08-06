@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "../../AsyncOracle.sol";
+import "../../AsyncOracleFraud.sol";
 import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
 import "../../manage/NodeManageBase.sol";
@@ -16,12 +16,12 @@ struct ModelData {
     bytes32 programHash;
 }
 
-contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracle, FeeModel_PNMC_Ownerable {
+contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleFraud, FeeModel_PNMC_Ownerable {
     mapping(uint256 => ModelData) public modelDataMap;
     IOpml public opml;
 
     constructor(address feeToken, uint256 protocolFee, uint256 nodeFee)
-        AsyncOracle(callbackFunctionSelector)
+        AsyncOracleFraud(callbackFunctionSelector)
         FeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee)
         Ownable(msg.sender)
     {}
@@ -77,6 +77,18 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracle,
     function invoke(uint256 requestId, bytes memory output) external override onlyWhitelist(msg.sender) {
         // others can challenge if the result is incorrect!
         opml.uploadResult(requestId, output);
+
+        // invoke callback
+        _invoke(requestId, output);
+        _updateGasPrice();
+    }
+
+    // call this function if the opml result is challenged and updated!
+    // anyone can call it!
+    function update(uint256 requestId) external onlyWhitelist(msg.sender) {
+        // get Latest output of request
+        bytes memory output = opml.getOutput(requestId);
+        require(output.length > 0, "output not uploaded");
 
         // invoke callback
         _invoke(requestId, output);

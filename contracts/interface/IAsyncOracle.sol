@@ -32,8 +32,6 @@ interface IAsyncOracle {
         DA outputDA
     ) external payable returns (uint256);
     // function await(uint256 AID) external;
-    function invoke(uint256 requestId, bytes memory result) external;
-    function update(uint256 requestId, bytes memory result) external;
 
     event AsyncRequest(
         address indexed requester,
@@ -50,4 +48,13 @@ interface IAsyncOracle {
     event AsyncResponse(
         address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output, DA outputDA
     );
+}
+
+interface IFraudAsync {
+    function invoke(uint256 requestId, bytes memory output) external;
+    function update(uint256 requestId) external;
+}
+
+interface IValidityAsync {
+    function invoke(uint256 requestId, bytes memory output, bytes memory proof) external;
 }

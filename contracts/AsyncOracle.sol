@@ -42,15 +42,6 @@ abstract contract AsyncOracle is IAsyncOracle {
         _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
     }
 
-    function invoke(uint256 requestId, bytes memory output) external virtual {
-        _invoke(requestId, output);
-        // _updateGasPrice();
-    }
-
-    function update(uint256 requestId, bytes memory result) external {
-        //TODO
-    }
-
     // *********** Internals ***********
 
     function _async(
@@ -153,15 +144,4 @@ abstract contract AsyncOracle is IAsyncOracle {
         req.outputDA = outputDA;
         // req.isInvoked = false;
     }
-
-    // set the gasPrice = 0 initially ?
-    //TODO: need this?
-    // function resetGasPrice() external onlyOwner {
-    //     gasPrice = 0;
-    // }
-
-    //TODO: module oracle fee
-    //TODO: nodes (external contract to control)
-    //TODO: add verifiers
-    //TODO: gas on this level, "model" on child level
 }
