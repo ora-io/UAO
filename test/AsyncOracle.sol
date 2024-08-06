@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {Test, console} from "forge-std/Test.sol";
 import {BabyAsyncOracle} from "../contracts/mock/babyasync/BabyAsyncOracle.sol";
 import {DA} from "../contracts/interface/IAsyncOracle.sol";
-import {Test, console} from "forge-std/Test.sol";
 
 contract AsyncOracleTest is Test {
     BabyAsyncOracle public bao;
-    uint256 protocolFee = 1;
-    uint256 nodeFee = 10;
 
     function setUp() public {
         bao = new BabyAsyncOracle();
@@ -27,9 +25,4 @@ contract AsyncOracleTest is Test {
 
         bao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
     }
-
-    // function testFuzz_SetNumber(uint256 x) public {
-    //     counter.setNumber(x);
-    //     assertEq(counter.number(), x);
-    // }
 }
