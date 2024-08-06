@@ -4,11 +4,6 @@ pragma solidity ^0.8.13;
 error NotNode();
 error NodeAlreadyExists();
 
-struct AddressRole {
-    mapping(address => bool) isNode;
-    address[] nodeList;
-}
-
 contract NodeManageBase {
     mapping(address => bool) public isNode;
     address[] public nodeList;

@@ -3,7 +3,8 @@ pragma solidity ^0.8.13;
 
 enum DA {
     Calldata,
-    Blob
+    Blob,
+    IPFS
 }
 
 struct Request {
