@@ -19,6 +19,7 @@ Install and use
 
 ```bash
 $ forge install ora-io/uao
+# recommended for vscode syntax check by https://book.getfoundry.sh/config/vscode
 $ forge remappings > remappings.txt
 ```
 
@@ -47,6 +48,7 @@ $ forge build
 
 ## Examples
 - check `src/mock`
+- [UAO-based OAO](https://github.com/ora-io/OAO-UAO)
 
 ## Framework Structure
 - `AsyncOracle.sol`: the main/basic AsyncOracle contract
