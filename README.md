@@ -23,7 +23,7 @@ $ forge install ora-io/uao
 $ forge remappings > remappings.txt
 ```
 
-In solidity:
+In solidity (Validity Proof style example):
 
 `BabyAsyncOracle.sol`
 ```solidity
@@ -53,8 +53,8 @@ $ forge build
 
 ## Framework Structure
 - `AsyncOracle.sol`: the main AsyncOracle contract
-- `AsyncOracleFraud.sol`: the main AsyncOracle contract with Fraud Proof style `invoke` and `update`
-- `AsyncOracleValidity.sol`: the main AsyncOracle contract with Validity Proof style `invoke`
+- `AsyncOracleFraud.sol`: the main AsyncOracle contract with **Fraud Proof** style `invoke` and `update`
+- `AsyncOracleValidity.sol`: the main AsyncOracle contract with **Validity Proof** style `invoke`
 - `fee/`
   - `base/`
     - includes basic fee types, that can be flexibly combined to use
