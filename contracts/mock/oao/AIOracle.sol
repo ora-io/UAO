@@ -74,7 +74,8 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleF
         require(noCallback == (request.gasLimit == 0), "Invalid gasLimit");
     }
 
-    function invoke(uint256 requestId, bytes memory output) external override onlyWhitelist(msg.sender) {
+    //onlyWhitelist(msg.sender)
+    function invoke(uint256 requestId, bytes memory output) external override onlyNode(msg.sender) {
         // others can challenge if the result is incorrect!
         opml.uploadResult(requestId, output);
 
