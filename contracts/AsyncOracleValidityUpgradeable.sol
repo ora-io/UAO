@@ -15,7 +15,7 @@ abstract contract AsyncOracleValidityUpgradeable is AsyncOracleUpgradeable, IVal
         external
         initializer
     {
-       initialize(_callbackFunctionSelector);
+       _initializeAsyncOracle(_callbackFunctionSelector);
     }
 
     mapping(uint256 => bool) invoked;
