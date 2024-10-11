@@ -11,9 +11,9 @@ abstract contract AsyncOracleValidityUpgradeable is AsyncOracleUpgradeable, IVal
     // constructor(bytes4 _callbackFunctionSelector) AsyncOracle(_callbackFunctionSelector) {}
 
     // **************** Setup Functions  ****************
-    function initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 
-        external
-        initializer
+    function _initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 
+        internal
+        onlyInitializing
     {
        _initializeAsyncOracle(_callbackFunctionSelector);
     }
