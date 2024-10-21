@@ -25,7 +25,6 @@ abstract contract ModelFee is FeeUtils, ModelManageBase {
     address internal _modelFeeToken;
     address internal _modelCommissionRevenueReceiver;
     // accumulated commission fee, i.e. non-receiver fee
-    // TODO: support commissionRevenue going to NodeFee.requestNodeFeeCache?
     uint256 internal _totalCommissionRevenue;
 
     mapping(uint256 => ModelFeeData) modelFeeMap;

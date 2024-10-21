@@ -24,6 +24,5 @@ abstract contract AsyncOracleValidity is AsyncOracle, IValidityAsync {
         if (!_verify(requestId, output, proof)) revert VerifyFailed();
         // invoke
         _invoke(requestId, output);
-        // _updateGasPrice();
     }
 }

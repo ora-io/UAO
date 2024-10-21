@@ -14,19 +14,6 @@ abstract contract AsyncOracle is IAsyncOracle {
         callbackFunctionSelector = _callbackFunctionSelector;
     }
 
-    // function await(uint256 AID) external view {
-    //     require(requests[AID].isInvoked);
-    // }
-
-    // function encodeAID(uint176 modelId, uint80 requestId) public pure returns (uint256) {
-    //     return modelId << 80 + requestId;
-    // }
-
-    // function decodeAID(uint256 aid) public pure returns (uint176 modelId, uint80 requestId) {
-    //     modelId = aid >> 80;
-    //     requestId = aid && (1 << 80 - 1);
-    // }
-
     // *********** Overrides & Externals ***********
 
     function async(
@@ -69,8 +56,6 @@ abstract contract AsyncOracle is IAsyncOracle {
 
         // invoke callback
         if (request.callbackAddr != address(0)) {
-            // bytes4 cbFuncSelector =
-            //     request.callbackFuncSelector == bytes4(0) ? callbackFunctionSelector : request.callbackFuncSelector;
             bytes memory payload =
                 abi.encodeWithSelector(callbackFunctionSelector, requestId, output, request.callbackData);
             (bool success, bytes memory data) = request.callbackAddr.call{gas: request.gasLimit}(payload);
@@ -106,8 +91,6 @@ abstract contract AsyncOracle is IAsyncOracle {
         DA inputDA,
         DA outputDA
     ) internal returns (Request storage req) {
-        // uint256 AID = encodeAID(modelId, requestId);
-        // Request storage req = requests[AID];
         req = requests[requestId];
 
         req.requester = requester;
@@ -119,7 +102,6 @@ abstract contract AsyncOracle is IAsyncOracle {
         req.callbackData = callbackData;
         req.inputDA = inputDA;
         req.outputDA = outputDA;
-        // req.isInvoked = false;
     }
 
     function _newRequestMemory(
@@ -142,6 +124,5 @@ abstract contract AsyncOracle is IAsyncOracle {
         req.callbackData = callbackData;
         req.inputDA = inputDA;
         req.outputDA = outputDA;
-        // req.isInvoked = false;
     }
 }

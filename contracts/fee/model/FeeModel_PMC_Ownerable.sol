@@ -9,14 +9,13 @@ import "../base/ProtocolFee.sol";
 import "../base/CallbackFee.sol";
 import "../../interface/IFeeModel.sol";
 
-abstract contract FeeModel_PMC_Ownerable is
-    IFeeModel,
-    ProtocolFee,
-    ModelFee,
-    CallbackFee,
-    Ownable,
-    AsyncOracle
-{
+/**
+ * Fee Model Structure:
+ *   - fee = protocol fee + model fee + callback fee
+ *   - contract balance = protocol revenue + model receiver revenue
+ *   - protocol revenue = protocol fee + model total commission revenue + callback fee (+ non-recorded transfer)
+ */
+abstract contract FeeModel_PMC_Ownerable is IFeeModel, ProtocolFee, ModelFee, CallbackFee, Ownable, AsyncOracle {
     constructor(address _feeToken, uint256 _protocolFee)
         ModelFee(_feeToken, owner())
         ProtocolFee(_feeToken, _protocolFee, owner())
@@ -30,8 +29,7 @@ abstract contract FeeModel_PMC_Ownerable is
         override(ProtocolFee, ModelFee, CallbackFee)
         returns (uint256)
     {
-        return ProtocolFee._estimateFee(_request) + ModelFee._estimateFee(_request)
-            + CallbackFee._estimateFee(_request);
+        return ProtocolFee._estimateFee(_request) + ModelFee._estimateFee(_request) + CallbackFee._estimateFee(_request);
     }
 
     function _estimateFeeMemory(Request memory _request)
@@ -40,8 +38,8 @@ abstract contract FeeModel_PMC_Ownerable is
         override(ProtocolFee, ModelFee, CallbackFee)
         returns (uint256)
     {
-        return ProtocolFee._estimateFeeMemory(_request) + ModelFee._estimateFeeMemory(_request) + CallbackFee._estimateFeeMemory(_request);
-        // return super.estimateFee(modelId, gasLimit);
+        return ProtocolFee._estimateFeeMemory(_request) + ModelFee._estimateFeeMemory(_request)
+            + CallbackFee._estimateFeeMemory(_request);
     }
 
     function _recordRevenue(Request storage _request, uint256 _remaining)
@@ -57,6 +55,7 @@ abstract contract FeeModel_PMC_Ownerable is
         // or can refund by updating the following
         ProtocolFee._addProtocolRevenue(_remaining);
         _remaining = 0;
+
         return _remaining;
     }
 
@@ -75,7 +74,6 @@ abstract contract FeeModel_PMC_Ownerable is
             msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
         );
         return _estimateFeeMemory(requestMemory);
-        // return super.estimateFee(modelId, gasLimit);
     }
 
     /**
@@ -83,10 +81,8 @@ abstract contract FeeModel_PMC_Ownerable is
      */
     function getProtocolRevenue() public view virtual override returns (uint256) {
         uint256 balance = _tokenBalanceOf(_protocolFeeToken, address(this));
-        // other revenue: _protocolRevenue + _commissionRevenue + not recorded transfer
-        uint256 nonprotocol =
-            _totalModelReceiverRevenue() + _getCallbackReimbursement();
-        // return _getProtocolRevenue() + _getModelTotalCommissionRevenue();
+        // other revenue: _getCallbackReimbursement + _getProtocolRevenue + _getModelTotalCommissionRevenue + not recorded transfer
+        uint256 nonprotocol = _totalModelReceiverRevenue();
         // assert(balance >= nonprotocol);
         return balance - nonprotocol;
     }

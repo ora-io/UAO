@@ -9,6 +9,13 @@ import "../base/ProtocolFee.sol";
 import "../base/CallbackFee.sol";
 import "../../interface/IFeeModel.sol";
 
+/**
+ * Fee Model Structure:
+ *   - fee = protocol fee + node fee + model fee + callback fee
+ *   - contract balance = protocol revenue + node revenue + model receiver revenue
+ *   - protocol revenue = protocol fee + model total commission revenue (+ non-recorded transfer)
+ *   - node revenue = node fee + callback fee
+ */
 abstract contract FeeModel_PNMC_Ownerable is
     IFeeModel,
     ProtocolFee,
@@ -44,7 +51,6 @@ abstract contract FeeModel_PNMC_Ownerable is
     {
         return ProtocolFee._estimateFeeMemory(_request) + ModelFee._estimateFeeMemory(_request)
             + NodeFee._estimateFeeMemory(_request) + CallbackFee._estimateFeeMemory(_request);
-        // return super.estimateFee(modelId, gasLimit);
     }
 
     function _recordRevenue(Request storage _request, uint256 _remaining)
@@ -63,6 +69,7 @@ abstract contract FeeModel_PNMC_Ownerable is
         // or can refund by updating the following
         ProtocolFee._addProtocolRevenue(_remaining);
         _remaining = 0;
+
         return _remaining;
     }
 
@@ -81,7 +88,6 @@ abstract contract FeeModel_PNMC_Ownerable is
             msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
         );
         return _estimateFeeMemory(requestMemory);
-        // return super.estimateFee(modelId, gasLimit);
     }
 
     /**
@@ -89,10 +95,9 @@ abstract contract FeeModel_PNMC_Ownerable is
      */
     function getProtocolRevenue() public view virtual override returns (uint256) {
         uint256 balance = _tokenBalanceOf(_protocolFeeToken, address(this));
-        // other revenue: _protocolRevenue + _commissionRevenue + not recorded transfer
+        // other revenue: _getProtocolRevenue + _getModelTotalCommissionRevenue + not recorded transfer
         uint256 nonprotocol =
             _totalModelReceiverRevenue() + _totalNodeRevenue + _totalRequestNodeFeeCache + _getCallbackReimbursement();
-        // return _getProtocolRevenue() + _getModelTotalCommissionRevenue();
         // assert(balance >= nonprotocol);
         return balance - nonprotocol;
     }

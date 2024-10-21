@@ -9,7 +9,6 @@ abstract contract AsyncOracleFraud is AsyncOracle, IFraudAsync {
 
     function invoke(uint256 requestId, bytes memory output) external virtual {
         _invoke(requestId, output);
-        // _updateGasPrice();
     }
 
     // function update(uint256 requestId) external virtual {

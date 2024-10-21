@@ -15,7 +15,6 @@ struct Request {
     address callbackAddr;
     uint64 gasLimit;
     bytes callbackData;
-    // bool isInvoked;
     DA inputDA;
     DA outputDA;
 }
@@ -31,7 +30,6 @@ interface IAsyncOracle {
         DA inputDA,
         DA outputDA
     ) external payable returns (uint256);
-    // function await(uint256 AID) external;
 
     event AsyncRequest(
         address indexed requester,
@@ -43,7 +41,7 @@ interface IAsyncOracle {
         bytes callbackData,
         DA inputDA,
         DA outputDA
-    ); //TODO param
+    );
 
     event AsyncResponse(
         address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output, DA outputDA
