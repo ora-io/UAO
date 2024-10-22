@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+
 import "../FeeUtils.sol";
 import "../../manage/ModelManageBase.sol";
 
@@ -20,7 +22,7 @@ struct ModelFeeData {
 error InvalidPercentage();
 
 //TODO: test ownership transfer
-abstract contract ModelFee is FeeUtils, ModelManageBase {
+abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
     // fee setup
     address internal _modelFeeToken;
     address internal _modelCommissionRevenueReceiver;
@@ -29,7 +31,11 @@ abstract contract ModelFee is FeeUtils, ModelManageBase {
 
     mapping(uint256 => ModelFeeData) modelFeeMap;
 
-    constructor(address _feeToken, address _commissionRevenueReceiver) {
+    // **************** Setup Functions  ****************
+    function _initializeModelFee(address _feeToken, address _commissionRevenueReceiver) 
+        internal 
+        onlyInitializing
+    {
         _setModelToken(_feeToken);
         _setModelCommissionRevenueReceiver(_commissionRevenueReceiver);
     }

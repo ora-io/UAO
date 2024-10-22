@@ -1,16 +1,23 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+
 import "./interface/IAsyncOracle.sol";
 
-abstract contract AsyncOracle is IAsyncOracle {
+abstract contract AsyncOracle is IAsyncOracle, Initializable {
     bytes4 public callbackFunctionSelector;
 
     uint256 _lastRequestId; // replacable by child contracts.
 
     mapping(uint256 => Request) public requests;
 
-    constructor(bytes4 _callbackFunctionSelector) {
+    // **************** Setup Functions  ****************
+
+    function _initializeAsyncOracle(bytes4 _callbackFunctionSelector)  
+        internal
+        onlyInitializing
+    {
         callbackFunctionSelector = _callbackFunctionSelector;
     }
 

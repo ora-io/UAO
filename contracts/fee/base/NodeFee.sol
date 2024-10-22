@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+
 import "../FeeUtils.sol";
 
 /**
@@ -9,7 +11,7 @@ import "../FeeUtils.sol";
  *   - RequestNodeFeeCache: cache the fee when a request is initiated, waiting for a node to collect;
  *   - NodeRevenue: node revenue, when node fulfill a request, the RequestNodeFeeCache[requestId] amount move from cache to NodeRevenue[node];
  */
-abstract contract NodeFee is FeeUtils {
+abstract contract NodeFee is FeeUtils, Initializable {
     address internal _nodeFeeToken;
     uint256 internal _nodeFeeAmount;
 
@@ -18,9 +20,14 @@ abstract contract NodeFee is FeeUtils {
     uint256 internal _totalNodeRevenue;
     uint256 internal _totalRequestNodeFeeCache;
 
-    constructor(address _feeToken, uint256 _feeAmount) {
-        _setNodeFee(_feeToken, _feeAmount);
+    // **************** Setup Functions  ****************
+    function _initializeNodeFee(address _feeToken, uint256 _feeAmount) 
+        internal 
+        onlyInitializing
+    {
+       _setNodeFee(_feeToken, _feeAmount);
     }
+
 
     // ********** Overrides **********
 
