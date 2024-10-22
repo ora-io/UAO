@@ -5,14 +5,16 @@ import "./AsyncOracle.sol";
 import {IFraudAsync} from "./interface/IAsyncOracle.sol";
 
 abstract contract AsyncOracleFraud is AsyncOracle, IFraudAsync {
-    constructor(bytes4 _callbackFunctionSelector) AsyncOracle(_callbackFunctionSelector) {}
+    // **************** Setup Functions  ****************
+
+    function _initializeAsyncOracleFraud(bytes4 _callbackFunctionSelector) 
+        internal
+        onlyInitializing
+    {
+       _initializeAsyncOracle(_callbackFunctionSelector);
+    }
 
     function invoke(uint256 requestId, bytes memory output) external virtual {
         _invoke(requestId, output);
     }
-
-    // function update(uint256 requestId) external virtual {
-    //     // bytes output = getUpdatedOutput()
-    //     _invoke(requestId, output);
-    // }
 }

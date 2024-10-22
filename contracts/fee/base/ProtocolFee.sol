@@ -1,13 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+
 import "../FeeUtils.sol";
 
 /**
  * Protocol Fee Structure:
  *   - all Protocol revenue = _getProtocolRevenue()
  */
-abstract contract ProtocolFee is FeeUtils {
+abstract contract ProtocolFee is FeeUtils, Initializable {
     // fee setup
     address internal _protocolFeeToken;
     uint256 internal _protocolFeeAmount;
@@ -15,7 +17,11 @@ abstract contract ProtocolFee is FeeUtils {
     // fee accumulated
     uint256 internal _protocolRevenue;
 
-    constructor(address _feeToken, uint256 _feeAmount, address _revenueReceiver) {
+    // **************** Setup Functions  ****************
+    function _initializeProtocolFee(address _feeToken, uint256 _feeAmount, address _revenueReceiver) 
+        internal 
+        onlyInitializing
+    {
         _setProtocolFee(_feeToken, _feeAmount);
         _setProtocolRevenueReceiver(_revenueReceiver);
     }
