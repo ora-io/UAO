@@ -25,9 +25,9 @@ abstract contract FeeModel_PMC_OwnerableUpgradeable is
     // {}
 
     // **************** Setup Functions  ****************
-    function initialize(address _feeToken, uint256 _protocolFee) 
-        external
-        initializer
+    function _initializeFeeModel_PMC_Ownerable(address _feeToken, uint256 _protocolFee) 
+        internal
+        onlyInitializing
     {
        _initializeModelFee(_feeToken, owner());
        _initializeProtocolFee(_feeToken, _protocolFee, owner());
