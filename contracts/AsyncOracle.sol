@@ -31,7 +31,7 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes calldata callbackData
     ) external payable virtual returns (uint256 requestId) {
         requestId = _nextRequestID();
-        _asyncMemory(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
+        _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     // *********** Internals ***********
