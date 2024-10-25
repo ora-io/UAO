@@ -84,7 +84,7 @@ abstract contract FeeModel_PNMC_Ownerable is
         DA inputDA,
         DA outputDA
     ) external view virtual returns (uint256) {
-        Request memory requestMemory = _newRequestMemory(
+        Request memory requestMemory = _newRequestCalldataToMemory(
             msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
         );
         return _estimateFeeMemory(requestMemory);
