@@ -12,11 +12,11 @@ abstract contract AsyncOracleValidity is AsyncOracle, IValidityAsync {
 
     mapping(uint256 => bool) invoked;
 
-    function _verify(uint256, bytes memory, bytes memory) internal pure virtual returns (bool) {
+    function _verify(uint256, bytes calldata, bytes calldata) internal pure virtual returns (bool) {
         return true;
     }
 
-    function invoke(uint256 requestId, bytes memory output, bytes memory proof) external virtual {
+    function invoke(uint256 requestId, bytes calldata output, bytes calldata proof) external virtual {
         // only invoke once in validity style async oracle
         if (invoked[requestId]) revert AlreadyInvoked();
         invoked[requestId] = true;
