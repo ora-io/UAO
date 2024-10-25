@@ -92,12 +92,10 @@ abstract contract FeeModel_PNMC_Ownerable is
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) external view virtual returns (uint256) {
         Request memory requestMemory = _newRequestCalldataToMemory(
-            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
+            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData
         );
         return _estimateFeeMemory(requestMemory);
     }

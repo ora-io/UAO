@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import {Test, console} from "forge-std/Test.sol";
 import {BabyAsyncOracle} from "../contracts/mock/babyasync/BabyAsyncOracle.sol";
-import {DA} from "../contracts/interface/IAsyncOracle.sol";
 
 contract AsyncOracleTest is Test {
     BabyAsyncOracle public bao;
@@ -20,9 +19,7 @@ contract AsyncOracleTest is Test {
         uint64 gasLimit = 0;
         bytes memory callbackData = new bytes(1);
         callbackData[0] = 0xab;
-        DA inputDA = DA.Calldata;
-        DA outputDA = DA.Calldata;
 
-        bao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        bao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData);
     }
 }

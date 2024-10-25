@@ -28,12 +28,10 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) external payable virtual returns (uint256 requestId) {
         requestId = _nextRequestID();
-        _asyncMemory(requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        _asyncMemory(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     // *********** Internals ***********
@@ -44,18 +42,12 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) internal virtual returns (Request storage req) {
-        req = _newRequestCalldataToStorage(
-            msg.sender, requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
-        );
+        req = _newRequestCalldataToStorage(msg.sender, requestId, modelId, input, callbackAddr, gasLimit, callbackData);
 
         // Emit event
-        emit AsyncRequest(
-            req.requester, requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
-        );
+        emit AsyncRequest(req.requester, requestId, modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     function _asyncMemory(
@@ -64,18 +56,12 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes memory input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes memory callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes memory callbackData
     ) internal virtual returns (Request storage req) {
-        req = _newRequestMemoryToStorage(
-            msg.sender, requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
-        );
+        req = _newRequestMemoryToStorage(msg.sender, requestId, modelId, input, callbackAddr, gasLimit, callbackData);
 
         // Emit event
-        emit AsyncRequest(
-            req.requester, requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
-        );
+        emit AsyncRequest(req.requester, requestId, modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     function _invoke(uint256 requestId, bytes memory output) internal {
@@ -95,7 +81,7 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
             }
         }
 
-        emit AsyncResponse(msg.sender, requestId, request.modelId, output, request.outputDA);
+        emit AsyncResponse(msg.sender, requestId, request.modelId, output);
     }
 
     // *********** Internals - Request ***********
@@ -115,9 +101,7 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) internal returns (Request storage req) {
         req = requests[requestId];
 
@@ -128,8 +112,6 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         req.callbackAddr = callbackAddr;
         req.gasLimit = gasLimit;
         req.callbackData = callbackData;
-        req.inputDA = inputDA;
-        req.outputDA = outputDA;
     }
 
     function _newRequestCalldataToMemory(
@@ -139,9 +121,7 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) internal pure returns (Request memory req) {
         req.requester = requester;
         req.requestId = requestId;
@@ -150,8 +130,6 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         req.callbackAddr = callbackAddr;
         req.gasLimit = gasLimit;
         req.callbackData = callbackData;
-        req.inputDA = inputDA;
-        req.outputDA = outputDA;
     }
 
     function _newRequestMemoryToStorage(
@@ -161,9 +139,7 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         bytes memory input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes memory callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes memory callbackData
     ) internal returns (Request storage req) {
         req = requests[requestId];
 
@@ -174,7 +150,5 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         req.callbackAddr = callbackAddr;
         req.gasLimit = gasLimit;
         req.callbackData = callbackData;
-        req.inputDA = inputDA;
-        req.outputDA = outputDA;
     }
 }

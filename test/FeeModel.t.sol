@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import {AIOracleUpgradeable} from "../contracts/mock/oao/AIOracle.sol";
-import {DA} from "../contracts/interface/IAsyncOracle.sol";
 import {ETH_IDENTIFIER} from "../contracts/utils/TokenAdapter.sol";
 import {Test, console} from "forge-std/Test.sol";
 
@@ -23,12 +22,7 @@ contract FeeModelTest is Test {
         uint64 gasLimit = 0;
         bytes memory callbackData = new bytes(1);
         callbackData[0] = 0xab;
-        DA inputDA = DA.Calldata;
-        DA outputDA = DA.Calldata;
-        assertEq(
-            oao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA),
-            protocolFee + nodeFee
-        );
+        assertEq(oao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData), protocolFee + nodeFee);
     }
 
     // function testFuzz_SetNumber(uint256 x) public {

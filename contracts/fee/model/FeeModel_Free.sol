@@ -12,7 +12,7 @@ abstract contract FeeModel_Free is IFeeModel, Initializable {
 
     // ********** Externals - Permissionless **********
 
-    function estimateFee(uint256, bytes calldata, address, uint64, bytes calldata, DA, DA)
+    function estimateFee(uint256, bytes calldata, address, uint64, bytes calldata)
         external
         pure
         virtual

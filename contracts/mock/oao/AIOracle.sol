@@ -54,17 +54,14 @@ contract AIOracleUpgradeable is
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) public payable override returns (uint256) {
         // init opml request
         ModelData memory model = modelDataMap[modelId];
         uint256 requestId = opml.initOpmlRequest(model.modelHash, model.programHash, input);
 
         // record & emit async request
-        Request storage request =
-            _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        Request storage request = _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
         // bytes4 defaultFSig = MID2FuncSig[modelId];
 
         // validate params
@@ -200,19 +197,7 @@ contract AIOracleUpgradeable is
         uint64 gasLimit,
         bytes calldata callbackData
     ) external payable returns (uint256) {
-        return async(modelId, input, callbackAddr, gasLimit, callbackData, DA.Calldata, DA.Calldata);
-    }
-
-    function requestCallback(
-        uint256 modelId,
-        bytes calldata input,
-        address callbackAddr,
-        uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
-    ) external payable returns (uint256) {
-        return async(modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        return async(modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     function claimModelRevenue(uint256 modelId) external onlyModelExists(modelId) {
