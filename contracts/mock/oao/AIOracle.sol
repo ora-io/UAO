@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
+
 import "../../AsyncOracleFraud.sol";
 import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
@@ -16,15 +18,31 @@ struct ModelData {
     bytes32 programHash;
 }
 
-contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleFraud, FeeModel_PNMC_Ownerable {
+contract AIOracleUpgradeable is
+    ModelManageBase,
+    NodeManageBase,
+    BWListManage,
+    AsyncOracleFraud,
+    FeeModel_PNMC_Ownerable
+{
     mapping(uint256 => ModelData) public modelDataMap;
     IOpml public opml;
 
-    constructor(address feeToken, uint256 protocolFee, uint256 nodeFee)
-        AsyncOracleFraud(callbackFunctionSelector)
-        FeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee)
-        Ownable(msg.sender)
-    {}
+    // constructor(address feeToken, uint256 protocolFee, uint256 nodeFee)
+    //     AsyncOracleFraud(callbackFunctionSelector)
+    //     FeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee)
+    //     Ownable(msg.sender)
+    // {}
+
+    // **************** Setup Functions  ****************
+    function initializeAIOracleUpgradeable(address feeToken, uint256 protocolFee, uint256 nodeFee)
+        external
+        initializer
+    {
+        _initializeAsyncOracleFraud(callbackFunctionSelector);
+        _initializeFeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee);
+        OwnableUpgradeable(msg.sender);
+    }
 
     // ********** Core Logic **********
 
@@ -75,7 +93,7 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleF
     }
 
     //onlyWhitelist(msg.sender)
-    function invoke(uint256 requestId, bytes calldata output) external override onlyNode(msg.sender) {
+    function invoke(uint256 requestId, bytes memory output) external override onlyNode(msg.sender) {
         // others can challenge if the result is incorrect!
         opml.uploadResult(requestId, output);
 
