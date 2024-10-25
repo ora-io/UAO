@@ -8,7 +8,13 @@ error AlreadyInvoked();
 error VerifyFailed();
 
 abstract contract AsyncOracleValidity is AsyncOracle, IValidityAsync {
-    constructor(bytes4 _callbackFunctionSelector) AsyncOracle(_callbackFunctionSelector) {}
+    // **************** Setup Functions  ****************
+    function _initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 
+        internal
+        onlyInitializing
+    {
+       _initializeAsyncOracle(_callbackFunctionSelector);
+    }
 
     mapping(uint256 => bool) invoked;
 

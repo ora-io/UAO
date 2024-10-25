@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
+
+//import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../AsyncOracle.sol";
 import "../base/ModelFee.sol";
 import "../base/NodeFee.sol";
@@ -22,14 +24,24 @@ abstract contract FeeModel_PNMC_Ownerable is
     NodeFee,
     ModelFee,
     CallbackFee,
-    Ownable,
+    OwnableUpgradeable,
     AsyncOracle
 {
-    constructor(address _feeToken, uint256 _protocolFee, uint256 _nodeFee)
-        ModelFee(_feeToken, owner())
-        NodeFee(_feeToken, _nodeFee)
-        ProtocolFee(_feeToken, _protocolFee, owner())
-    {}
+    // constructor(address _feeToken, uint256 _protocolFee, uint256 _nodeFee)
+    //     ModelFee(_feeToken, owner())
+    //     NodeFee(_feeToken, _nodeFee)
+    //     ProtocolFee(_feeToken, _protocolFee, owner())
+    // {}
+
+    // **************** Setup Functions  ****************
+    function _initializeFeeModel_PNMC_Ownerable(address _feeToken, uint256 _protocolFee, uint256 _nodeFee) 
+        internal
+        onlyInitializing
+    {
+       _initializeModelFee(_feeToken, owner());
+       _initializeNodeFee(_feeToken, _nodeFee);
+       _initializeProtocolFee(_feeToken, _protocolFee, owner());
+    }
 
     // ********** Overrides **********
 
