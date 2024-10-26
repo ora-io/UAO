@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-enum DA {
-    Calldata,
-    Blob,
-    IPFS
-}
-
 struct Request {
     address requester;
     uint256 requestId;
@@ -15,8 +9,6 @@ struct Request {
     address callbackAddr;
     uint64 gasLimit;
     bytes callbackData;
-    DA inputDA;
-    DA outputDA;
 }
 //TODO: re-order to gas cost opt
 
@@ -26,9 +18,7 @@ interface IAsyncOracle {
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) external payable returns (uint256);
 
     event AsyncRequest(
@@ -38,21 +28,17 @@ interface IAsyncOracle {
         bytes input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes callbackData
     );
 
-    event AsyncResponse(
-        address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output, DA outputDA
-    );
+    event AsyncResponse(address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output);
 }
 
 interface IFraudAsync {
-    function invoke(uint256 requestId, bytes memory output) external;
+    function invoke(uint256 requestId, bytes calldata output) external;
     function update(uint256 requestId) external;
 }
 
 interface IValidityAsync {
-    function invoke(uint256 requestId, bytes memory output, bytes memory proof) external;
+    function invoke(uint256 requestId, bytes calldata output, bytes calldata proof) external;
 }

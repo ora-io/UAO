@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
+
 import "../../AsyncOracleFraud.sol";
 import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
@@ -16,15 +18,26 @@ struct ModelData {
     bytes32 programHash;
 }
 
-contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleFraud, FeeModel_PNMC_Ownerable {
+contract AIOracle is
+    ModelManageBase,
+    NodeManageBase,
+    BWListManage,
+    AsyncOracleFraud,
+    FeeModel_PNMC_Ownerable
+{
     mapping(uint256 => ModelData) public modelDataMap;
     IOpml public opml;
 
-    constructor(address feeToken, uint256 protocolFee, uint256 nodeFee)
-        AsyncOracleFraud(callbackFunctionSelector)
-        FeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee)
-        Ownable(msg.sender)
-    {}
+    // **************** Setup Functions  ****************
+
+    function initializeAIOracle(address feeToken, uint256 protocolFee, uint256 nodeFee)
+        external
+        initializer
+    {
+        _initializeAsyncOracleFraud(callbackFunctionSelector);
+        _initializeFeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee);
+        __Ownable_init(msg.sender);
+    }
 
     // ********** Core Logic **********
 
@@ -36,17 +49,14 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleF
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) public payable override returns (uint256) {
         // init opml request
         ModelData memory model = modelDataMap[modelId];
         uint256 requestId = opml.initOpmlRequest(model.modelHash, model.programHash, input);
 
         // record & emit async request
-        Request storage request =
-            _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        Request storage request = _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
         // bytes4 defaultFSig = MID2FuncSig[modelId];
 
         // validate params
@@ -182,19 +192,7 @@ contract AIOracle is ModelManageBase, NodeManageBase, BWListManage, AsyncOracleF
         uint64 gasLimit,
         bytes calldata callbackData
     ) external payable returns (uint256) {
-        return async(modelId, input, callbackAddr, gasLimit, callbackData, DA.Calldata, DA.Calldata);
-    }
-
-    function requestCallback(
-        uint256 modelId,
-        bytes calldata input,
-        address callbackAddr,
-        uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
-    ) external payable returns (uint256) {
-        return async(modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA);
+        return async(modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
     function claimModelRevenue(uint256 modelId) external onlyModelExists(modelId) {

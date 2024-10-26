@@ -3,7 +3,6 @@ pragma solidity ^0.8.13;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
-// import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../AsyncOracle.sol";
 import "../base/ModelFee.sol";
 import "../base/NodeFee.sol";
@@ -26,12 +25,13 @@ abstract contract FeeModel_PMC_Ownerable is
     AsyncOracle
 {
     // **************** Setup Functions  ****************
+
     function _initializeFeeModel_PMC_Ownerable(address _feeToken, uint256 _protocolFee) 
-        internal
-        onlyInitializing
+        internal 
+        onlyInitializing 
     {
-       _initializeModelFee(_feeToken, owner());
-       _initializeProtocolFee(_feeToken, _protocolFee, owner());
+        _initializeModelFee(_feeToken, owner());
+        _initializeProtocolFee(_feeToken, _protocolFee, owner());
     }
 
     // ********** Overrides **********
@@ -79,12 +79,10 @@ abstract contract FeeModel_PMC_Ownerable is
         bytes calldata input,
         address callbackAddr,
         uint64 gasLimit,
-        bytes calldata callbackData,
-        DA inputDA,
-        DA outputDA
+        bytes calldata callbackData
     ) external view virtual returns (uint256) {
-        Request memory requestMemory = _newRequestMemory(
-            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData, inputDA, outputDA
+        Request memory requestMemory = _newRequestCalldataToMemory(
+            msg.sender, _peekNextRequestID(), modelId, input, callbackAddr, gasLimit, callbackData
         );
         return _estimateFeeMemory(requestMemory);
     }

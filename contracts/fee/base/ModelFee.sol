@@ -32,6 +32,7 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
     mapping(uint256 => ModelFeeData) modelFeeMap;
 
     // **************** Setup Functions  ****************
+    
     function _initializeModelFee(address _feeToken, address _commissionRevenueReceiver) 
         internal 
         onlyInitializing

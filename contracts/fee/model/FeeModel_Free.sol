@@ -6,16 +6,14 @@ import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Ini
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "../../interface/IFeeModel.sol";
 
-abstract contract FeeModel_FreeUpgradeable is IFeeModel, Initializable{
+abstract contract FeeModel_Free is IFeeModel, Initializable {
     // **************** Setup Functions  ****************
-    function initialize() 
-        external 
-        initializer
-    {}
+    
+    function initialize() external initializer {}
 
     // ********** Externals - Permissionless **********
 
-    function estimateFee(uint256, bytes calldata, address, uint64, bytes calldata, DA, DA)
+    function estimateFee(uint256, bytes calldata, address, uint64, bytes calldata)
         external
         pure
         virtual
