@@ -25,8 +25,11 @@ abstract contract FeeModel_PMC_Ownerable is
     AsyncOracle
 {
     // **************** Setup Functions  ****************
-    
-    function _initializeFeeModel_PMC_Ownerable(address _feeToken, uint256 _protocolFee) internal onlyInitializing {
+
+    function _initializeFeeModel_PMC_Ownerable(address _feeToken, uint256 _protocolFee) 
+        internal 
+        onlyInitializing 
+    {
         _initializeModelFee(_feeToken, owner());
         _initializeProtocolFee(_feeToken, _protocolFee, owner());
     }
