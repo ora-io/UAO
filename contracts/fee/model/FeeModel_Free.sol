@@ -8,6 +8,7 @@ import "../../interface/IFeeModel.sol";
 
 abstract contract FeeModel_Free is IFeeModel, Initializable {
     // **************** Setup Functions  ****************
+    
     function initialize() external initializer {}
 
     // ********** Externals - Permissionless **********

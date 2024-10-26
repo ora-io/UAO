@@ -9,6 +9,7 @@ error VerifyFailed();
 
 abstract contract AsyncOracleValidity is AsyncOracle, IValidityAsync {
     // **************** Setup Functions  ****************
+    
     function _initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 
         internal
         onlyInitializing

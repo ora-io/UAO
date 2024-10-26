@@ -1,17 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {AIOracleUpgradeable} from "../contracts/mock/oao/AIOracle.sol";
+import {AIOracle} from "../contracts/mock/oao/AIOracle.sol";
 import {ETH_IDENTIFIER} from "../contracts/utils/TokenAdapter.sol";
 import {Test, console} from "forge-std/Test.sol";
 
 contract FeeModelTest is Test {
-    AIOracleUpgradeable public oao;
+    AIOracle public oao;
     uint256 protocolFee = 1;
     uint256 nodeFee = 10;
 
     function setUp() public {
-        oao = new AIOracleUpgradeable(ETH_IDENTIFIER, protocolFee, nodeFee);
+        oao = new AIOracle();
+        AIOracle(address(oao)).initializeAIOracle(ETH_IDENTIFIER, protocolFee, nodeFee);
     }
 
     function test_estimateFee() public view {
@@ -24,9 +25,4 @@ contract FeeModelTest is Test {
         callbackData[0] = 0xab;
         assertEq(oao.estimateFee(modelId, input, callbackAddr, gasLimit, callbackData), protocolFee + nodeFee);
     }
-
-    // function testFuzz_SetNumber(uint256 x) public {
-    //     counter.setNumber(x);
-    //     assertEq(counter.number(), x);
-    // }
 }

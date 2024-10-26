@@ -9,6 +9,7 @@ contract AsyncOracleTest is Test {
 
     function setUp() public {
         bao = new BabyAsyncOracle();
+        BabyAsyncOracle(address(bao)).initializeBabyAsyncOracle();
     }
 
     function test_estimateFee() public view {

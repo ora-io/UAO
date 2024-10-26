@@ -21,6 +21,7 @@ abstract contract NodeFee is FeeUtils, Initializable {
     uint256 internal _totalRequestNodeFeeCache;
 
     // **************** Setup Functions  ****************
+    
     function _initializeNodeFee(address _feeToken, uint256 _feeAmount) 
         internal 
         onlyInitializing

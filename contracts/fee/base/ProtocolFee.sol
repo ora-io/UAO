@@ -18,6 +18,7 @@ abstract contract ProtocolFee is FeeUtils, Initializable {
     uint256 internal _protocolRevenue;
 
     // **************** Setup Functions  ****************
+    
     function _initializeProtocolFee(address _feeToken, uint256 _feeAmount, address _revenueReceiver) 
         internal 
         onlyInitializing

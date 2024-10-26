@@ -18,7 +18,7 @@ struct ModelData {
     bytes32 programHash;
 }
 
-contract AIOracleUpgradeable is
+contract AIOracle is
     ModelManageBase,
     NodeManageBase,
     BWListManage,
@@ -28,20 +28,15 @@ contract AIOracleUpgradeable is
     mapping(uint256 => ModelData) public modelDataMap;
     IOpml public opml;
 
-    // constructor(address feeToken, uint256 protocolFee, uint256 nodeFee)
-    //     AsyncOracleFraud(callbackFunctionSelector)
-    //     FeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee)
-    //     Ownable(msg.sender)
-    // {}
-
     // **************** Setup Functions  ****************
-    function initializeAIOracleUpgradeable(address feeToken, uint256 protocolFee, uint256 nodeFee)
+
+    function initializeAIOracle(address feeToken, uint256 protocolFee, uint256 nodeFee)
         external
         initializer
     {
         _initializeAsyncOracleFraud(callbackFunctionSelector);
         _initializeFeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee);
-        OwnableUpgradeable(msg.sender);
+        __Ownable_init(msg.sender);
     }
 
     // ********** Core Logic **********
