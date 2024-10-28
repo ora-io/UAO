@@ -84,6 +84,27 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         emit AsyncResponse(msg.sender, requestId, request.modelId, output);
     }
 
+    function _invokeUint256(uint256 requestId, bytes memory output) internal {
+        // locate request data of AsyncID
+        Request storage request = requests[requestId];
+
+        // invoke callback
+        if (request.callbackAddr != address(0)) {
+            uint256 outputUint256 = abi.decode(output, (uint256)); // convert bytes to uint256, for callback only
+            bytes memory payload =
+                abi.encodeWithSelector(callbackFunctionSelector, requestId, outputUint256, request.callbackData);
+            (bool success, bytes memory data) = request.callbackAddr.call{gas: request.gasLimit}(payload);
+            require(success, "callback fail");
+            if (!success) {
+                assembly {
+                    revert(add(data, 32), mload(data))
+                }
+            }
+        }
+
+        emit AsyncResponse(msg.sender, requestId, request.modelId, output);
+    }
+
     // *********** Internals - Request ***********
 
     function _nextRequestID() internal returns (uint256) {

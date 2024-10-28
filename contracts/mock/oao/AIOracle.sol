@@ -85,7 +85,7 @@ contract AIOracle is
     }
 
     //onlyWhitelist(msg.sender)
-    function invoke(uint256 requestId, bytes memory output) external override onlyNode(msg.sender) {
+    function invoke(uint256 requestId, bytes calldata output) external override onlyNode(msg.sender) {
         // others can challenge if the result is incorrect!
         opml.uploadResult(requestId, output);
 
