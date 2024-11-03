@@ -28,7 +28,7 @@ contract CallbackFee is FeeUtils {
         override
         returns (uint256 remaining)
     {
-        uint256 fee = _estimateFee(_request);
+        uint256 fee = CallbackFee._estimateFee(_request);
         if (_remaining < fee) revert InsufficientFee(FeeType.CallbackFee);
         _addCallbackReimbursement(_remaining);
         remaining = _remaining - fee;
