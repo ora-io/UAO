@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
-import "../../AsyncOracleFraud.sol";
+import "../../AsyncOracle.sol";
 import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
 import "../../manage/NodeManageBase.sol";
@@ -22,7 +22,7 @@ contract AIOracle is
     ModelManageBase,
     NodeManageBase,
     BWListManage,
-    AsyncOracleFraud,
+    AsyncOracle,
     FeeModel_PNMC_Ownerable
 {
     mapping(uint256 => ModelData) public modelDataMap;
@@ -34,7 +34,7 @@ contract AIOracle is
         external
         initializer
     {
-        _initializeAsyncOracleFraud(callbackFunctionSelector);
+        _initializeAsyncOracle(callbackFunctionSelector);
         _initializeFeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee);
         __Ownable_init(msg.sender);
     }

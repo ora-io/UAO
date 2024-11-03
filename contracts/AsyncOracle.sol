@@ -34,6 +34,10 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         _async(requestId, modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
+    function invoke(uint256 requestId, bytes calldata output, bytes calldata) external virtual {
+        _invoke(requestId, output);
+    }
+
     // *********** Internals ***********
 
     function _async(

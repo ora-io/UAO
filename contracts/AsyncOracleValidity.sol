@@ -22,7 +22,7 @@ abstract contract AsyncOracleValidity is AsyncOracle {
         return true;
     }
 
-    function invoke(uint256 requestId, bytes calldata output, bytes calldata proof) external virtual {
+    function invoke(uint256 requestId, bytes calldata output, bytes calldata proof) external override virtual {
         // only invoke once in validity style async oracle
         if (invoked[requestId]) revert AlreadyInvoked();
         invoked[requestId] = true;

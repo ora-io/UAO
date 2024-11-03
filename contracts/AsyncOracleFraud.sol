@@ -14,7 +14,7 @@ abstract contract AsyncOracleFraud is AsyncOracle, IFraudAsync {
        _initializeAsyncOracle(_callbackFunctionSelector);
     }
 
-    // function invoke(uint256 requestId, bytes calldata output, bytes calldata) external override virtual {
-    //     _invoke(requestId, output);
-    // }
+    function invoke(uint256 requestId, bytes calldata output, bytes calldata) external override virtual {
+        _invoke(requestId, output);
+    }
 }
