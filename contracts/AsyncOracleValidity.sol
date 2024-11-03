@@ -2,12 +2,11 @@
 pragma solidity ^0.8.13;
 
 import "./AsyncOracle.sol";
-import {IValidityAsync} from "./interface/IAsyncOracle.sol";
 
 error AlreadyInvoked();
 error VerifyFailed();
 
-abstract contract AsyncOracleValidity is AsyncOracle, IValidityAsync {
+abstract contract AsyncOracleValidity is AsyncOracle {
     // **************** Setup Functions  ****************
     
     function _initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 

@@ -58,7 +58,7 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
         returns (uint256 _remaining)
     {
         // check fees
-        uint256 fee = _estimateFee(_request);
+        uint256 fee = ModelFee._estimateFee(_request);
         if (remaining < fee) revert InsufficientFee(FeeType.ModelFee);
         // calc fee amounts
         uint256 receiverFeeAmount = fee * modelFeeMap[_request.modelId].receiverPercentage / 100;
