@@ -1,11 +1,5 @@
 # Universal AsyncOracle: the Async-style Oracle Contract Framework
 
-## TODO
-- Complete nodeManagers
-- Upgradable support
-- Ownership transfer support
-- Test case coverage
-
 ## Usage
 
 Init a forge project if haven't
@@ -47,6 +41,12 @@ Then compile the contract, should succeed without errors.
 $ forge build
 ```
 
+## TODO
+[x] Upgradable support
+[] Complete nodeManagers
+[] Ownership transfer support
+[] Test case coverage
+
 ## Examples
 - check `src/mock`
 - [UAO-based OAO](https://github.com/ora-io/OAO-UAO)
@@ -62,8 +62,9 @@ $ forge build
     - should have minimum externals
   - `model/`
     - includes variant fee models that combines the basic fee types in different ways
-    - currently has 2 fee models: 
+    - currently has 3 fee models: 
       - Free, i.e. no fee
+      - PMC_Ownerable, i.e. Protocol+Model+Callback+Ownerable
       - PNMC_Ownerable, i.e. Protocol+Model+Node+Callback+Ownerable
     - can have externals
 - `manage/`

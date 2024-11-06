@@ -6,7 +6,7 @@ import "./AsyncOracle.sol";
 error AlreadyInvoked();
 error VerifyFailed();
 
-abstract contract AsyncOracleValidity is AsyncOracle {
+contract AsyncOracleValidity is AsyncOracle {
     // **************** Setup Functions  ****************
     
     function _initializeAsyncOracleValidity(bytes4 _callbackFunctionSelector) 
