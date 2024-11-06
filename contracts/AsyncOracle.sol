@@ -3,7 +3,7 @@ pragma solidity ^0.8.13;
 
 import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
 
-import "./interface/IAsyncOracle.sol";
+import "./interfaces/IAsyncOracle.sol";
 
 abstract contract AsyncOracle is IAsyncOracle, Initializable {
     bytes4 public callbackFunctionSelector;

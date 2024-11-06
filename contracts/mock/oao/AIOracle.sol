@@ -8,7 +8,7 @@ import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
 import "../../manage/ModelManageBase.sol";
 import "../../manage/NodeManageBase.sol";
 import "../../manage/BWListManage.sol";
-import "./interface/IOpml.sol";
+import "./interfaces/IOpml.sol";
 
 // aiOracleCallback(uint256 requestId, bytes calldata output, bytes calldata callbackData)
 bytes4 constant callbackFunctionSelector = 0xb0347814;

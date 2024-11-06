@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "./AsyncOracle.sol";
-import {IFraudAsync} from "./interface/IAsyncOracle.sol";
+import {IFraudAsync} from "./interfaces/IAsyncOracle.sol";
 
 abstract contract AsyncOracleFraud is AsyncOracle, IFraudAsync {
     // **************** Setup Functions  ****************

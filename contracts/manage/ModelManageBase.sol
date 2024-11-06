@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-error InvalidModelID();
+error InvalidModelID(); // error sig: 3c6e1db8
 error ModelIDAlreadyExist();
 
 contract ModelManageBase {

@@ -8,7 +8,7 @@ import "../base/ModelFee.sol";
 import "../base/NodeFee.sol";
 import "../base/ProtocolFee.sol";
 import "../base/CallbackFee.sol";
-import "../../interface/IFeeModel.sol";
+import "../../interfaces/IFeeModel.sol";
 
 /**
  * Fee Model Structure:

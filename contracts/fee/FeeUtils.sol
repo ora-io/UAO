@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import "../utils/TokenAdapter.sol";
-import "../interface/IAsyncOracle.sol";
+import "../interfaces/IAsyncOracle.sol";
 
 enum FeeType {
     ModelFee,

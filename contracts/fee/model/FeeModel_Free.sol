@@ -4,7 +4,7 @@ pragma solidity ^0.8.13;
 import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "../../interface/IFeeModel.sol";
+import "../../interfaces/IFeeModel.sol";
 
 abstract contract FeeModel_Free is IFeeModel, Initializable {
     // **************** Setup Functions  ****************
