@@ -176,4 +176,24 @@ abstract contract AsyncOracle is IAsyncOracle, Initializable {
         req.gasLimit = gasLimit;
         req.callbackData = callbackData;
     }
+
+    function _newRequestMemoryToMemory(
+        address requester,
+        uint256 requestId,
+        uint256 modelId,
+        bytes memory input,
+        address callbackAddr,
+        uint64 gasLimit,
+        bytes memory callbackData
+    ) internal view returns (Request memory req) {
+        req = requests[requestId];
+
+        req.requester = requester;
+        req.requestId = requestId;
+        req.modelId = modelId;
+        req.input = input;
+        req.callbackAddr = callbackAddr;
+        req.gasLimit = gasLimit;
+        req.callbackData = callbackData;
+    }
 }

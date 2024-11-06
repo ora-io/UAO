@@ -62,7 +62,7 @@ contract AIOracle is
         // validate params
         _validateParams(request);
 
-        // receive & record fee
+        // receive & record fee, use eth only for now
         _receiveAndRecordRevenue(request, msg.value);
 
         return requestId;
