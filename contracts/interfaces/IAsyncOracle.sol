@@ -36,6 +36,6 @@ interface IAsyncOracle {
     event AsyncResponse(address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output);
 }
 
-interface IFraudAsync {
-    function update(uint256 requestId) external;
+interface IAsyncFraud {
+    function update(uint256 requestId, bytes calldata output) external;
 }
