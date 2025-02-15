@@ -14,15 +14,6 @@ abstract contract ProtocolFee is FeeUtils, OwnableUpgradeable {
     // fee accumulated
     uint256 internal _protocolRevenue;
 
-    // **************** Setup Functions  ****************
-    
-    function _initializeProtocolFee(uint256 _feeAmount) 
-        internal 
-        onlyInitializing
-    {
-        _setProtocolFeeAmount(_feeAmount);
-    }
-
     // *********** Overrides ***********
 
     function _estimateFee(Request storage) internal view virtual override returns (uint256) {

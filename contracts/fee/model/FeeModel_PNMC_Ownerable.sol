@@ -35,9 +35,9 @@ abstract contract FeeModel_PNMC_Ownerable is
         onlyInitializing
     {
         __Ownable_init(owner);
-        _initializeProtocolFee(_protocolFee);
-        _initializeNodeFee(_nodeFee);
         _setFeeToken(_feeToken);
+        _setProtocolFeeAmount(_protocolFee);
+        _setNodeFeeAmount(_nodeFee);
         _setFinancialOperator(_financialOperator);
     }
 
@@ -120,7 +120,7 @@ abstract contract FeeModel_PNMC_Ownerable is
         // transfer
         _tokenTransferOut(feeToken, _financialOperator, amountOut);
     }
-    
+
     /**
      * help function to set fee token and protocol fee amount
      */

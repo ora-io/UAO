@@ -34,8 +34,8 @@ abstract contract FeeModel_PMC_Ownerable is
         onlyInitializing 
     {
         __Ownable_init(owner);
-        _initializeProtocolFee(_protocolFee);
         _setFeeToken(_feeToken);
+        _setProtocolFeeAmount(_protocolFee);
         _setFinancialOperator(_financialOperator);
     }
 
@@ -75,18 +75,6 @@ abstract contract FeeModel_PMC_Ownerable is
         _remaining = 0;
 
         return _remaining;
-    }
-
-    function setFinancialOperator(address _operator) external override onlyOwner {
-        _setFinancialOperator(_operator);
-    }
-
-    function setModelFeeData(uint256 _modelId, uint256 _fee, address _receiver, uint256 _receiverPercentage) external override onlyOwner {
-        _setModelFeeData(_modelId, _fee, _receiver, _receiverPercentage);
-    }
-
-    function claimModelReceiverRevenue(uint256 modelId) external override onlyModelExists(modelId) {
-        _claimModelReceiverRevenue(modelId);
     }
 
     // ********** Externals - Permissionless **********

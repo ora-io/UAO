@@ -19,16 +19,6 @@ abstract contract NodeFee is FeeUtils, OwnableUpgradeable {
     uint256 internal _totalNodeRevenue;
     uint256 internal _totalRequestNodeFeeCache;
 
-    // **************** Setup Functions  ****************
-    
-    function _initializeNodeFee(uint256 _feeAmount) 
-        internal 
-        onlyInitializing
-    {
-       _setNodeFeeAmount(_feeAmount);
-    }
-
-
     // ********** Overrides **********
 
     function _estimateFee(Request storage) internal view virtual override returns (uint256) {
