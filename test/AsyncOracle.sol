@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
 import {Test, console} from "forge-std/Test.sol";
-import {BabyAsyncOracle} from "../contracts/mock/babyasync/BabyAsyncOracle.sol";
+import {BabyOracle} from "../contracts/mock/baby/BabyOracle.sol";
 
 contract AsyncOracleTest is Test {
-    BabyAsyncOracle public bao;
+    BabyOracle public bao;
 
     function setUp() public {
-        bao = new BabyAsyncOracle();
-        BabyAsyncOracle(address(bao)).initializeBabyAsyncOracle();
+        bao = new BabyOracle();
+        BabyOracle(address(bao)).initializeBabyOracle();
     }
 
     function test_estimateFee() public view {

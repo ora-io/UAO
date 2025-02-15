@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
-import "./AsyncOracle.sol";
-import {IAsyncFraud} from "./interfaces/IAsyncOracle.sol";
+// import "./AsyncOracle.sol";
+// import {IAsyncFraud} from "./interfaces/IAsyncOracle.sol";
+
+import "@ora-io/uao/AsyncOracle.sol";
+import {IAsyncFraud} from "@ora-io/uao/interfaces/IAsyncOracle.sol";
 
 contract AsyncOracleFraud is AsyncOracle, IAsyncFraud {
     // **************** Setup Functions  ****************

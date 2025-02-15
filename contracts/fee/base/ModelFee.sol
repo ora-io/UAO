@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
 import "../FeeUtils.sol";
 import "../../manage/ModelManageBase.sol";
@@ -21,25 +21,11 @@ struct ModelFeeData {
 
 error InvalidPercentage();
 
-//TODO: test ownership transfer
-abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
-    // fee setup
-    address internal _modelFeeToken;
-    address internal _modelCommissionRevenueReceiver;
+abstract contract ModelFee is FeeUtils, ModelManageBase, OwnableUpgradeable {
     // accumulated commission fee, i.e. non-receiver fee
     uint256 internal _totalCommissionRevenue;
 
     mapping(uint256 => ModelFeeData) modelFeeMap;
-
-    // **************** Setup Functions  ****************
-    
-    function _initializeModelFee(address _feeToken, address _commissionRevenueReceiver) 
-        internal 
-        onlyInitializing
-    {
-        _setModelToken(_feeToken);
-        _setModelCommissionRevenueReceiver(_commissionRevenueReceiver);
-    }
 
     // ********** Overrides **********
 
@@ -70,32 +56,39 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
         _remaining = remaining - fee;
     }
 
-    // *********** Externals ***********
-    //   - remember to check modelId existance
-
+    // ********** Externals - Fee **********
     function getModelFeeData(uint256 modelId)
         external
         view
         virtual
-        onlyModelExists(modelId)
         returns (ModelFeeData memory)
     {
         return _getModelFeeData(modelId);
     }
 
-    function claimModelReceiverRevenue(uint256 modelId) external virtual onlyModelExists(modelId) {
+    function setModelFeeData(uint256 _modelId, uint256 _fee, address _receiver, uint256 _receiverPercentage) external virtual onlyOwner {
+        _setModelFeeData(_modelId, _fee, _receiver, _receiverPercentage);
+    }
+
+    // *********** Externals - Revenue ***********
+    function claimModelReceiverRevenue(uint256 modelId) external virtual {
+        _claimModelReceiverRevenue(modelId);
+    }
+
+    function claimModelRevenue(uint256 modelId) external {
         _claimModelReceiverRevenue(modelId);
     }
 
     // ********** Internals - Model Fee **********
 
-    function _getModelFeeData(uint256 _modelId) internal view returns (ModelFeeData memory) {
+    function _getModelFeeData(uint256 _modelId) internal view onlyModelExists(_modelId) returns (ModelFeeData memory) {
         ModelFeeData memory model = modelFeeMap[_modelId];
         return model;
     }
 
     function _setModelFeeData(uint256 _modelId, uint256 _fee, address _receiver, uint256 _receiverPercentage)
-        internal
+        internal 
+        onlyModelExists(_modelId)
     {
         if (_receiverPercentage > 100) revert InvalidPercentage(); // percentage should be <= 100
         ModelFeeData storage model = modelFeeMap[_modelId];
@@ -123,22 +116,6 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
         model.receiverPercentage = _receiverPercentage;
     }
 
-    function _getModelToken() internal view returns (address) {
-        return _modelFeeToken;
-    }
-
-    // separate setters of token and fee amount: because token is universal while fee amount is model-specific
-    function _setModelToken(address _feeToken) internal {
-        _modelFeeToken = _feeToken;
-    }
-
-    /**
-     * exist as an remainter to claim model fee to _receiver when remove model fee
-     */
-    function _removeModelFee(uint256 _modelId) internal {
-        _claimModelReceiverRevenue(_modelId);
-    }
-
     // ********** Internals - Model Receiver Revenue **********
 
     function _getModelReceiverRevenue(uint256 _modelId) internal view returns (uint256) {
@@ -162,7 +139,7 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
         return totalReceiverRevenue;
     }
 
-    function _claimModelReceiverRevenue(uint256 _modelId) internal {
+    function _claimModelReceiverRevenue(uint256 _modelId) internal onlyModelExists(_modelId){
         ModelFeeData storage modelFee = modelFeeMap[_modelId];
 
         // user friendly check
@@ -173,7 +150,7 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
 
         // reset model _receiver revenue then transfer
         _resetModelReceiverRevenue(_modelId);
-        _tokenTransferOut(_modelFeeToken, modelFee.receiver, amountOut);
+        _tokenTransferOut(feeToken, modelFee.receiver, amountOut);
     }
 
     // ********** Internals - Commission Revenue **********
@@ -194,20 +171,12 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, Initializable {
     //    - can ignore this and claim in the high level (e.g. merge with other fee)
     //    - no external claimModelTotalCommissionRevenue() because it's optional.
 
-    function _claimModelTotalCommissionRevenue() internal {
+    function _claimModelTotalCommissionRevenue(address _commissionRevenueReceiver) internal {
         // CEI Princeple
         uint256 amountOut = _totalCommissionRevenue;
 
         // reset model commision revenue then transfer
         _resetModelTotalCommissionRevenue();
-        _tokenTransferOut(_modelFeeToken, _getModelCommissionRevenueReceiver(), amountOut);
-    }
-
-    function _getModelCommissionRevenueReceiver() internal virtual returns (address) {
-        return _modelCommissionRevenueReceiver;
-    }
-
-    function _setModelCommissionRevenueReceiver(address _commissionRevenueReceiver) internal virtual {
-        _modelCommissionRevenueReceiver = _commissionRevenueReceiver;
+        _tokenTransferOut(feeToken, _commissionRevenueReceiver, amountOut);
     }
 }

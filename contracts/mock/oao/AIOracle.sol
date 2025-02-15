@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
-import "../../AsyncOracle.sol";
-import "../../fee/model/FeeModel_PNMC_Ownerable.sol";
-import "../../manage/ModelManageBase.sol";
-import "../../manage/NodeManageBase.sol";
-import "../../manage/BWListManage.sol";
-import "./interfaces/IOpml.sol";
+import "@ora-io/uao/AsyncOracle.sol";
+import "@ora-io/uao/fee/model/FeeModel_PNMC_Ownerable.sol";
+import "@ora-io/uao/manage/ModelManageBase.sol";
+import "@ora-io/uao/manage/NodeManageBase.sol";
+import "@ora-io/uao/manage/BWListManage.sol";
+import "@ora-io/uao/interfaces/IOpml.sol";
 
 // aiOracleCallback(uint256 requestId, bytes calldata output, bytes calldata callbackData)
 bytes4 constant callbackFunctionSelector = 0xb0347814;
@@ -30,13 +30,12 @@ contract AIOracle is
 
     // **************** Setup Functions  ****************
 
-    function initializeAIOracle(address feeToken, uint256 protocolFee, uint256 nodeFee)
+    function initializeAIOracle(address feeToken, uint256 protocolFee, uint256 nodeFee, address financialOperator)
         external
         initializer
     {
         _initializeAsyncOracle(callbackFunctionSelector);
-        _initializeFeeModel_PNMC_Ownerable(feeToken, protocolFee, nodeFee);
-        __Ownable_init(msg.sender);
+        _initializeFeeModel_PNMC_Ownerable(msg.sender, feeToken, protocolFee, nodeFee, financialOperator);
     }
 
     // ********** Core Logic **********
@@ -155,7 +154,7 @@ contract AIOracle is
     // remove the model from OAO, so OAO would not serve the model
     function removeModel(uint256 modelId) external onlyOwner onlyModelExists(modelId) {
         // claim the corresponding revenue first
-        _removeModelFee(modelId);
+        _claimModelReceiverRevenue(modelId);
         // remove from ModelManageBase
         _removeModel(modelId);
     }
@@ -195,10 +194,6 @@ contract AIOracle is
         return async(modelId, input, callbackAddr, gasLimit, callbackData);
     }
 
-    function claimModelRevenue(uint256 modelId) external onlyModelExists(modelId) {
-        _claimModelReceiverRevenue(modelId);
-    }
-
     function invokeCallback(uint256 requestId, bytes calldata output) external onlyWhitelist(msg.sender) {
         // others can challenge if the result is incorrect!
         opml.uploadResult(requestId, output);
@@ -227,14 +222,3 @@ contract AIOracle is
         gasPrice = 0;
     }
 }
-
-//TODO: add transferOwnership (what's the best way?)
-// function transferOwnership(address newOwner) public {
-//     if (owner == address(0)) {
-//         require(msg.sender == server, "only server can init owner");
-//     } else {
-//         require(msg.sender == owner, "Not the owner");
-//     }
-//     owner = newOwner;
-// }
-//TODO: make AsyncOracle support upgradable
