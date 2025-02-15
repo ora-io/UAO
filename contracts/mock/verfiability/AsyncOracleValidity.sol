@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
-import "./AsyncOracle.sol";
+// import "./AsyncOracle.sol";
+import "@ora-io/uao/AsyncOracle.sol";
 
 error AlreadyInvoked();
 error VerifyFailed();

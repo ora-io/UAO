@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
 struct Request {
     address requester;
@@ -36,6 +36,6 @@ interface IAsyncOracle {
     event AsyncResponse(address indexed responder, uint256 indexed requestId, uint256 indexed modelId, bytes output);
 }
 
-interface IFraudAsync {
-    function update(uint256 requestId) external;
+interface IAsyncFraud {
+    function update(uint256 requestId, bytes calldata output) external;
 }

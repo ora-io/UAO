@@ -1,31 +1,18 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
-
-import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+pragma solidity 0.8.23;
 
 import "../FeeUtils.sol";
 
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 /**
  * Protocol Fee Structure:
  *   - all Protocol revenue = _getProtocolRevenue()
  */
-abstract contract ProtocolFee is FeeUtils, Initializable {
+abstract contract ProtocolFee is FeeUtils, OwnableUpgradeable {
     // fee setup
-    address internal _protocolFeeToken;
     uint256 internal _protocolFeeAmount;
-    address internal _protocolRevenueReceiver;
     // fee accumulated
     uint256 internal _protocolRevenue;
-
-    // **************** Setup Functions  ****************
-    
-    function _initializeProtocolFee(address _feeToken, uint256 _feeAmount, address _revenueReceiver) 
-        internal 
-        onlyInitializing
-    {
-        _setProtocolFee(_feeToken, _feeAmount);
-        _setProtocolRevenueReceiver(_revenueReceiver);
-    }
 
     // *********** Overrides ***********
 
@@ -48,28 +35,32 @@ abstract contract ProtocolFee is FeeUtils, Initializable {
         remaining = _remaining - _protocolFeeAmount;
     }
 
-    // *********** Externals ***********
-    //   - exist because it's mandatory, and may merge with other fees;
+    // *********** Externals - Fee ***********
 
+    function getProtocolFeeAmount() external virtual returns (uint256) {
+        return _getProtocolFeeAmount();
+    }
+    function setProtocolFeeAmount(uint256 _feeAmount) external virtual onlyOwner {
+        _setProtocolFeeAmount(_feeAmount);
+    }
+
+    // *********** Externals - Revenue ***********
+
+    // - exist because it's mandatory, and may merge with other fees;
     function getProtocolRevenue() external virtual returns (uint256);
     function claimProtocolRevenue() external virtual;
 
-    // *********** Internals - Protocol Fee ***********
-
-    function _getProtocolFeeToken() internal view returns (address) {
-        return _protocolFeeToken;
-    }
+    // *********** Internals - Fee ***********
 
     function _getProtocolFeeAmount() internal view returns (uint256) {
         return _protocolFeeAmount;
     }
 
-    function _setProtocolFee(address _feeToken, uint256 _feeAmount) internal {
-        _protocolFeeToken = _feeToken;
+    function _setProtocolFeeAmount(uint256 _feeAmount) internal {
         _protocolFeeAmount = _feeAmount;
     }
 
-    // *********** Internals - Protocol Revenue ***********
+    // *********** Internals - Revenue ***********
 
     function _getProtocolRevenue() internal view returns (uint256) {
         return _protocolRevenue;
@@ -83,17 +74,9 @@ abstract contract ProtocolFee is FeeUtils, Initializable {
         _protocolRevenue = 0;
     }
 
-    function _claimProtocolRevenue() internal virtual {
+    function _claimProtocolRevenue(address _receiver) internal virtual {
         uint256 amountOut = _protocolRevenue;
         _resetProtocolRevenue();
-        _tokenTransferOut(_protocolFeeToken, _getProtocolRevenueReceiver(), amountOut);
-    }
-
-    function _getProtocolRevenueReceiver() internal virtual returns (address) {
-        return _protocolRevenueReceiver;
-    }
-
-    function _setProtocolRevenueReceiver(address _revenueReceiver) internal virtual {
-        _protocolRevenueReceiver = _revenueReceiver;
+        _tokenTransferOut(feeToken, _receiver, amountOut);
     }
 }

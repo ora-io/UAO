@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
-import {Initializable} from "@openzeppelin-upgradeable/contracts/proxy/utils/Initializable.sol";
+import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
 import "../FeeUtils.sol";
 
@@ -11,24 +11,13 @@ import "../FeeUtils.sol";
  *   - RequestNodeFeeCache: cache the fee when a request is initiated, waiting for a node to collect;
  *   - NodeRevenue: node revenue, when node fulfill a request, the RequestNodeFeeCache[requestId] amount move from cache to NodeRevenue[node];
  */
-abstract contract NodeFee is FeeUtils, Initializable {
-    address internal _nodeFeeToken;
+abstract contract NodeFee is FeeUtils, OwnableUpgradeable {
     uint256 internal _nodeFeeAmount;
 
     mapping(address => uint256) nodeRevenue;
     mapping(uint256 => uint256) requestNodeFeeCache;
     uint256 internal _totalNodeRevenue;
     uint256 internal _totalRequestNodeFeeCache;
-
-    // **************** Setup Functions  ****************
-    
-    function _initializeNodeFee(address _feeToken, uint256 _feeAmount) 
-        internal 
-        onlyInitializing
-    {
-       _setNodeFee(_feeToken, _feeAmount);
-    }
-
 
     // ********** Overrides **********
 
@@ -52,7 +41,15 @@ abstract contract NodeFee is FeeUtils, Initializable {
         remaining = _remaining - _nodeFeeAmount;
     }
 
-    // ********** Externals **********
+    // ********** Externals - Fee **********
+    function getNodeFeeAmount() external virtual returns (uint256) {
+        return _getNodeFeeAmount();
+    }
+    function setNodeFeeAmount(uint256 _feeAmount) external virtual onlyOwner {
+        _setNodeFeeAmount(_feeAmount);
+    }
+
+    // ********** Externals - Revenue **********
     //   - exist because it's mandatory, and less possible to be merged with other fee
 
     function getMyNodeRevenue() external virtual returns (uint256) {
@@ -71,22 +68,17 @@ abstract contract NodeFee is FeeUtils, Initializable {
         _claimNodeRevenue(node);
     }
 
-    // ********** Internals - Node Fee **********
-
-    function _getNodeFeeToken() internal view returns (address) {
-        return _nodeFeeToken;
-    }
+    // ********** Internals - Fee **********
 
     function _getNodeFeeAmount() internal view returns (uint256) {
         return _nodeFeeAmount;
     }
 
-    function _setNodeFee(address _feeToken, uint256 _feeAmount) internal {
-        _nodeFeeToken = _feeToken;
+    function _setNodeFeeAmount(uint256 _feeAmount) internal {
         _nodeFeeAmount = _feeAmount;
     }
 
-    // ********** Internals - Node Revenue **********
+    // ********** Internals - Revenue **********
 
     function _getNodeRevenue(address _user) internal view returns (uint256) {
         return nodeRevenue[_user];
@@ -112,7 +104,7 @@ abstract contract NodeFee is FeeUtils, Initializable {
     function _claimNodeRevenue(address _node) internal {
         uint256 amount = nodeRevenue[_node];
         _resetNodeRevenue(_node);
-        _tokenTransferOut(_nodeFeeToken, _node, amount);
+        _tokenTransferOut(feeToken, _node, amount);
     }
 
     // ********** Internals - RequestNodeFeeCache **********

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity 0.8.23;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
 
@@ -9,6 +9,7 @@ import "../base/NodeFee.sol";
 import "../base/ProtocolFee.sol";
 import "../base/CallbackFee.sol";
 import "../../interfaces/IFeeModel.sol";
+import "../../manage/FinancialOperator.sol";
 
 /**
  * Fee Model Structure:
@@ -17,21 +18,25 @@ import "../../interfaces/IFeeModel.sol";
  *   - protocol revenue = protocol fee + model total commission revenue + callback fee (+ non-recorded transfer)
  */
 abstract contract FeeModel_PMC_Ownerable is
+    OwnableUpgradeable,
     IFeeModel,
     ProtocolFee,
     ModelFee,
     CallbackFee,
-    OwnableUpgradeable,
-    AsyncOracle
+    AsyncOracle,
+    FinancialOperator
 {
+
     // **************** Setup Functions  ****************
 
-    function _initializeFeeModel_PMC_Ownerable(address _feeToken, uint256 _protocolFee) 
+    function _initializeFeeModel_PMC_Ownerable(address owner, address _feeToken, uint256 _protocolFee, address _financialOperator) 
         internal 
         onlyInitializing 
     {
-        _initializeModelFee(_feeToken, owner());
-        _initializeProtocolFee(_feeToken, _protocolFee, owner());
+        __Ownable_init(owner);
+        _setFeeToken(_feeToken);
+        _setProtocolFeeAmount(_protocolFee);
+        _setFinancialOperator(_financialOperator);
     }
 
     // ********** Overrides **********
@@ -91,7 +96,7 @@ abstract contract FeeModel_PMC_Ownerable is
      * include model commission revenue (i.e. the 1-receiverPercentage part) in protocol revenue
      */
     function getProtocolRevenue() public view virtual override returns (uint256) {
-        uint256 balance = _tokenBalanceOf(_protocolFeeToken, address(this));
+        uint256 balance = _tokenBalanceOf(feeToken, address(this));
         // other revenue: _getCallbackReimbursement + _getProtocolRevenue + _getModelTotalCommissionRevenue + not recorded transfer
         uint256 nonprotocol = _totalModelReceiverRevenue();
         // assert(balance >= nonprotocol);
@@ -100,18 +105,21 @@ abstract contract FeeModel_PMC_Ownerable is
 
     // ********** Externals - Admin **********
 
-    function claimProtocolRevenue() public virtual override onlyOwner {
+    function claimProtocolRevenue() public virtual override onlyFinancialOperator {
         // CEI
         uint256 amountOut = getProtocolRevenue();
         _resetProtocolRevenue();
         _resetModelTotalCommissionRevenue();
         // transfer
-        _tokenTransferOut(_protocolFeeToken, _getProtocolRevenueReceiver(), amountOut);
+        _tokenTransferOut(feeToken, _financialOperator, amountOut);
     }
 
+    /**
+     * help function to set fee token and protocol fee amount
+     */
     function setFee(address _feeToken, uint256 _protocolFeeAmount) external virtual onlyOwner {
-        _setProtocolFee(_feeToken, _protocolFeeAmount);
-        _setModelToken(_feeToken);
+        _setFeeToken(_feeToken);
+        _setProtocolFeeAmount(_protocolFeeAmount);
     }
 
     // ********** Internal **********
@@ -121,6 +129,7 @@ abstract contract FeeModel_PMC_Ownerable is
      */
     function _receiveAndRecordRevenue(Request storage _request, uint256 _amount) internal {
         _recordRevenue(_request, _amount);
-        _tokenTransferIn(_protocolFeeToken, msg.sender, _amount);
+        _tokenTransferIn(feeToken, msg.sender, _amount);
     }
+    
 }
