@@ -8,10 +8,13 @@ import {Test, console} from "forge-std/Test.sol";
 contract FeeModelPMCTest is Test {
     BabyOraclePMC public bo;
     uint256 protocolFee = 1;
+    address owner = address(this);
+    address financialOperator = address(0x456);
+    address invokeOperator = address(0x789);
 
     function setUp() public {
         bo = new BabyOraclePMC();
-        BabyOraclePMC(address(bo)).initializeBabyOracle(ETH_IDENTIFIER, protocolFee, address(this));
+        BabyOraclePMC(address(bo)).initialize(owner, financialOperator, invokeOperator, ETH_IDENTIFIER, protocolFee);
     }
 
     function test_estimateFee() public view {
@@ -32,17 +35,15 @@ contract FeeModelPMCTest is Test {
     }
 
     function test_financialOperator() public {
-        address originOperator = address(this); // Assume the current contract is the receiver
-
         // Make an async call to ensure fee > 0 for succ claim later
-        bo.addModel(0, 0, address(this), 0);
+        bo.addModel(0, 0, owner, 0);
         bo.async{value: 1 ether}(0, new bytes(1), address(0), 0, new bytes(1));
 
         // Ensure the receiver is set correctly
-        assertEq(bo.getFinancialOperator(), originOperator);
+        assertEq(bo.getFinancialOperator(), financialOperator);
         
         // Change operator
-        address newOperator = address(0x456);
+        address newOperator = address(0xaaa);
         bo.setFinancialOperator(newOperator);
         
         // Simulate unauthorized receiver trying to claim revenue
@@ -50,7 +51,7 @@ contract FeeModelPMCTest is Test {
         bo.claimProtocolRevenue(); // Expect revert
         
         // Simulate claim revenue
-        vm.prank(address(0x456));
+        vm.prank(newOperator);
         bo.claimProtocolRevenue(); // Expect succ
     }
 

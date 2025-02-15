@@ -30,15 +30,15 @@ abstract contract FeeModel_PNMC_Ownerable is
 {
     // **************** Setup Functions  ****************
     
-    function _initializeFeeModel_PNMC_Ownerable(address owner, address _feeToken, uint256 _protocolFee, uint256 _nodeFee, address _financialOperator) 
+    function _initializeFeeModel_PNMC_Ownerable(address owner, address _financialOperator, address _feeToken, uint256 _protocolFee, uint256 _nodeFee) 
         internal
         onlyInitializing
     {
         __Ownable_init(owner);
+        _setFinancialOperator(_financialOperator);
         _setFeeToken(_feeToken);
         _setProtocolFeeAmount(_protocolFee);
         _setNodeFeeAmount(_nodeFee);
-        _setFinancialOperator(_financialOperator);
     }
 
     // ********** Overrides **********

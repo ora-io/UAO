@@ -2,7 +2,6 @@
 pragma solidity ^0.8.13;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
-
 import "../FeeUtils.sol";
 import "../../manage/ModelManageBase.sol";
 
@@ -77,6 +76,26 @@ abstract contract ModelFee is FeeUtils, ModelManageBase, OwnableUpgradeable {
 
     function claimModelRevenue(uint256 modelId) external {
         _claimModelReceiverRevenue(modelId);
+    }
+
+    // *********** Externals - Add/Remove Model ***********
+
+    function addModel(
+        uint256 modelId,
+        uint256 fee,
+        address receiver,
+        uint256 receiverPercentage
+    ) external onlyOwner onlyModelNotExists(modelId) {
+        _addModel(modelId);
+        _setModelFeeData(modelId, fee, receiver, receiverPercentage);
+    }
+
+    // remove the model from OAO, so OAO would not serve the model
+    function removeModel(uint256 modelId) external onlyOwner onlyModelExists(modelId) {
+        // claim the corresponding revenue first
+        _claimModelReceiverRevenue(modelId);
+        // remove from ModelManageBase
+        _removeModel(modelId);
     }
 
     // ********** Internals - Model Fee **********
