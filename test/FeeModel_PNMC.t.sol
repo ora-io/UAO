@@ -9,10 +9,12 @@ contract FeeModelPNMCTest is Test {
     BabyOraclePNMC public bo;
     uint256 protocolFee = 1;
     uint256 nodeFee = 10;
+    address owner = address(this);
+    address financialOperator = address(0x456);
 
     function setUp() public {
         bo = new BabyOraclePNMC();
-        BabyOraclePNMC(address(bo)).initializeBabyOracle(ETH_IDENTIFIER, protocolFee, nodeFee, address(this));
+        BabyOraclePNMC(address(bo)).initialize(owner, financialOperator, ETH_IDENTIFIER, protocolFee, nodeFee);
     }
 
     function test_estimateFee() public view {
@@ -33,17 +35,15 @@ contract FeeModelPNMCTest is Test {
     }
 
     function test_financialOperator() public {
-        address originOperator = address(this); // Assume the current contract is the receiver
-
         // Make an async call to ensure fee > 0 for succ claim later
-        bo.addModel(0, 0, address(this), 0);
+        bo.addModel(0, 0, owner, 0);
         bo.async{value: 1 ether}(0, new bytes(1), address(0), 0, new bytes(1));
 
         // Ensure the receiver is set correctly
-        assertEq(bo.getFinancialOperator(), originOperator);
+        assertEq(bo.getFinancialOperator(), financialOperator);
         
         // Change operator
-        address newOperator = address(0x456);
+        address newOperator = address(0xaaa);
         bo.setFinancialOperator(newOperator);
         
         // Simulate unauthorized receiver trying to claim revenue
@@ -51,7 +51,7 @@ contract FeeModelPNMCTest is Test {
         bo.claimProtocolRevenue(); // Expect revert
         
         // Simulate claim revenue
-        vm.prank(address(0x456));
+        vm.prank(newOperator);
         bo.claimProtocolRevenue(); // Expect succ
     }
 

@@ -5,8 +5,6 @@ import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/Own
 
 import "@ora-io/uao/AsyncOracle.sol";
 import "@ora-io/uao/fee/model/FeeModel_PNMC_Ownerable.sol";
-import "@ora-io/uao/manage/ModelManageBase.sol";
-import "@ora-io/uao/manage/NodeManageBase.sol";
 import "@ora-io/uao/manage/BWListManage.sol";
 import "@ora-io/uao/interfaces/IOpml.sol";
 
@@ -19,8 +17,6 @@ struct ModelData {
 }
 
 contract AIOracle is
-    ModelManageBase,
-    NodeManageBase,
     BWListManage,
     AsyncOracle,
     FeeModel_PNMC_Ownerable
@@ -30,12 +26,12 @@ contract AIOracle is
 
     // **************** Setup Functions  ****************
 
-    function initializeAIOracle(address feeToken, uint256 protocolFee, uint256 nodeFee, address financialOperator)
+    function initializeAIOracle(address owner, address financialOperator, address feeToken, uint256 protocolFee, uint256 nodeFee)
         external
         initializer
     {
         _initializeAsyncOracle(callbackFunctionSelector);
-        _initializeFeeModel_PNMC_Ownerable(msg.sender, feeToken, protocolFee, nodeFee, financialOperator);
+        _initializeFeeModel_PNMC_Ownerable(owner, financialOperator, feeToken, protocolFee, nodeFee);
     }
 
     // ********** Core Logic **********
@@ -149,14 +145,6 @@ contract AIOracle is
         model.modelHash = modelHash;
         model.programHash = programHash;
         opml.uploadModel(modelHash, programHash);
-    }
-
-    // remove the model from OAO, so OAO would not serve the model
-    function removeModel(uint256 modelId) external onlyOwner onlyModelExists(modelId) {
-        // claim the corresponding revenue first
-        _claimModelReceiverRevenue(modelId);
-        // remove from ModelManageBase
-        _removeModel(modelId);
     }
 
     // ********** Whilte/Block List **********

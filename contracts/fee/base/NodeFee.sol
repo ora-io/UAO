@@ -2,8 +2,8 @@
 pragma solidity 0.8.23;
 
 import {OwnableUpgradeable} from "@openzeppelin-upgradeable/contracts/access/OwnableUpgradeable.sol";
-
 import "../FeeUtils.sol";
+import "../../manage/NodeManageBase.sol";
 
 /**
  * Node Fee Structure:
@@ -11,7 +11,7 @@ import "../FeeUtils.sol";
  *   - RequestNodeFeeCache: cache the fee when a request is initiated, waiting for a node to collect;
  *   - NodeRevenue: node revenue, when node fulfill a request, the RequestNodeFeeCache[requestId] amount move from cache to NodeRevenue[node];
  */
-abstract contract NodeFee is FeeUtils, OwnableUpgradeable {
+abstract contract NodeFee is FeeUtils, NodeManageBase, OwnableUpgradeable {
     uint256 internal _nodeFeeAmount;
 
     mapping(address => uint256) nodeRevenue;
@@ -68,6 +68,20 @@ abstract contract NodeFee is FeeUtils, OwnableUpgradeable {
         _claimNodeRevenue(node);
     }
 
+    // *********** Externals - Add/Remove Node ***********
+
+    function addNode(address node) external onlyOwner onlyNotNode(node) {
+        _addNode(node);
+    }
+
+    // remove the model from OAO, so OAO would not serve the model
+    function removeNode(address node) external onlyOwner onlyNotNode(node) {
+        // claim the corresponding revenue first
+        _claimNodeRevenue(node);
+        // remove from NodeManageBase
+        _removeNode(node);
+    }
+
     // ********** Internals - Fee **********
 
     function _getNodeFeeAmount() internal view returns (uint256) {
@@ -80,25 +94,25 @@ abstract contract NodeFee is FeeUtils, OwnableUpgradeable {
 
     // ********** Internals - Revenue **********
 
-    function _getNodeRevenue(address _user) internal view returns (uint256) {
-        return nodeRevenue[_user];
+    function _getNodeRevenue(address _node) internal view returns (uint256) {
+        return nodeRevenue[_node];
     }
 
-    function _addNodeRevenue(address _user, uint256 _amount) internal {
+    function _addNodeRevenue(address _node, uint256 _amount) internal {
         _totalNodeRevenue += _amount;
-        nodeRevenue[_user] += _amount;
+        nodeRevenue[_node] += _amount;
     }
 
     // use this when node fulfilled a _request
-    function _addNodeRevenueFromRequest(address _user, uint256 _requestId) internal {
+    function _addNodeRevenueFromRequest(address _node, uint256 _requestId) internal {
         uint256 amount = requestNodeFeeCache[_requestId];
         _resetRequestNodeFeeCache(_requestId);
-        _addNodeRevenue(_user, amount);
+        _addNodeRevenue(_node, amount);
     }
 
-    function _resetNodeRevenue(address _user) internal {
-        _totalNodeRevenue -= nodeRevenue[_user];
-        nodeRevenue[_user] = 0;
+    function _resetNodeRevenue(address _node) internal {
+        _totalNodeRevenue -= nodeRevenue[_node];
+        nodeRevenue[_node] = 0;
     }
 
     function _claimNodeRevenue(address _node) internal {
