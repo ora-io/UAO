@@ -7,7 +7,7 @@ User sends requests, called "async" to the oracle contract, emitting an event to
 The whole process is asynchronous, making it extremely scalable. 
 The oracle contract can be deployed on any EVM-compatible blockchain, and the oracle server can be either a centralized server or a decentralized computation network.
 
-<div align="center"><img src="https://github.com/ora-io/UAO/tree/assets/assets/UAO Arch.png?raw=true" alt="UAO" width="200"/></div>
+<div align="center"><img src="https://github.com/ora-io/UAO/blob/assets/assets/UAO%20Arch.png?raw=true" alt="UAO" width="200"/></div>
 
 This framework defines the interfaces and provides a set of out-of-box implementations for the oracle contract, including fee models, manages, and samples etc.
 
