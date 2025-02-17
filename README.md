@@ -1,4 +1,15 @@
-# Universal AsyncOracle: the Async-style Oracle Contract Framework
+# Universal AsyncOracle: an Async-style Oracle Contract Framework
+
+## What is Async Oracle?
+
+Async Oracle is a general type of oracle that scales blockchain with off-chain computation. 
+User sends requests, called "async" to the oracle contract, emitting an event to notify the oracle server, and the server will fulfill the request after processing, and return the result by "invoke" the same oracle contract.
+The whole process is asynchronous, making it extremely scalable. 
+The oracle contract can be deployed on any EVM-compatible blockchain, and the oracle server can be either a centralized server or a decentralized computation network.
+
+<div align="center"><img src="https://github.com/ora-io/UAO/blob/assets/assets/UAO%20Arch.png?raw=true" alt="UAO" width="600"/></div>
+
+This framework defines the interfaces and provides a set of out-of-box implementations for the oracle contract, including fee models, manages, and samples etc.
 
 ## Usage
 
